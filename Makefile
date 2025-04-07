@@ -4,6 +4,7 @@ VENV=.venv
 PYTHON=$(VENV)/bin/python
 UV=/Users/greg/.cargo/bin/uv
 RUN=$(UV) run
+ROOT_DIR=$(shell pwd)
 
 .PHONY: help venv install run format reset-db
 
@@ -18,8 +19,11 @@ help:
 venv:
 	$(UV) venv .venv
 
-run:
-	$(RUN) uvicorn src.back.hello:app --reload
+front:
+	cd $(ROOT_DIR)/src/front/ && npm start
+
+back:
+	$(RUN) uvicorn src.back.main:app --reload
 
 format:
 	$(UV)x ruff check --fix
