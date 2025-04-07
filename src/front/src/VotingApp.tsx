@@ -13,66 +13,73 @@ export default function VotingApp() {
     const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [loadingUser, setLoadingUser] = useState<boolean>(false);
+    const [loadingUser, setLoadingUser] = useState<boolean>(false); // Manages user fetching state
 
-    // Fetch user data if token exists
+    // Wrap handleLogout in useCallback as it's a dependency of fetchUser
+    const handleLogout = useCallback(() => {
+        console.log("Logging out.");
+        localStorage.removeItem('token');
+        setToken(null);
+        setCurrentUser(null);
+        setError(null);
+        setLoadingUser(false); // Reset loading state on logout
+    }, []);
+
+    // Fetch user data if token exists, but not already fetched
     const fetchUser = useCallback(async () => {
-        if (token && !currentUser && !loadingUser) { // Prevent multiple fetches
-            setLoadingUser(true);
+        // Only fetch if there's a token AND we don't have a user yet.
+        if (token && !currentUser) {
+            console.log("Attempting to fetch user...");
+            setLoadingUser(true); // Indicate user fetching started
             setError(null);
             try {
                 const response = await api.fetchCurrentUser();
+                console.log("Fetched user data:", response.data);
                 setCurrentUser(response.data);
-                console.log("Fetched user:", response.data);
             } catch (err: any) {
                 console.error("Failed to fetch user:", err);
                 setError('Session expired or invalid. Please log in again.');
                 handleLogout(); // Log out if token is invalid
             } finally {
-                setLoadingUser(false);
+                console.log("Finished fetching user attempt.");
+                setLoadingUser(false); // Indicate user fetching finished
             }
+        } else {
+             console.log("Skipping fetchUser:", { hasToken: !!token, hasCurrentUser: !!currentUser });
         }
-    }, [token, currentUser, loadingUser]); // Add loadingUser dependency
+        // Removed loadingUser from dependencies, added handleLogout
+    }, [token, currentUser, handleLogout]);
 
+    // Effect to trigger fetch when token appears/changes
     useEffect(() => {
-        fetchUser();
+        console.log("Token effect triggered. Token:", token);
+        if (token) { // Only try to fetch if token exists
+            fetchUser();
+        }
+        // This effect runs when token changes (login/logout) or fetchUser changes (it shouldn't)
     }, [token, fetchUser]);
 
     // Handle user login
     const handleLogin = async (username: string, password: string) => {
         setError(null);
-        setLoadingUser(true); // Show loading state during login
+        // Removed setLoadingUser(true) here.
         try {
+            console.log("Attempting login...");
             const response = await api.login(username, password);
             const newToken = response.data.access_token;
+            console.log("Login successful, got token.");
             localStorage.setItem('token', newToken);
-            setToken(newToken);
-            setCurrentUser(null); // Reset user, fetchUser effect will trigger
-            // fetchUser will be called by useEffect due to token change
+            setCurrentUser(null); // Clear potential stale user data first
+            setToken(newToken);   // Set token, which triggers the useEffect -> fetchUser
         } catch (err: any) {
             console.error("Login failed:", err);
             const errorMsg = err.response?.data?.detail || 'Login failed. Check credentials.';
             setError(errorMsg);
-            setLoadingUser(false); // Stop loading on error
+            // No need to set loadingUser false here as it wasn't set true
         }
-        // setLoadingUser(false) will be handled by fetchUser's finally block on success
     };
 
-    // Handle user logout
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        setToken(null);
-        setCurrentUser(null);
-        setError(null);
-        setLoadingUser(false); // Ensure loading state is reset
-    };
-
-    // Display loading indicator
-    if (loadingUser && !currentUser) { // Show loading only when initially fetching user or logging in
-        return <div className="p-4 text-center text-lg font-medium">Loading...</div>;
-    }
-
-    // Main render logic
+    // Refined Render Logic
     return (
         <div className="p-4 md:p-8 max-w-5xl mx-auto font-sans">
             <header className="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
@@ -82,29 +89,28 @@ export default function VotingApp() {
                 )}
             </header>
 
-            {/* Render appropriate view based on auth state */}
+            {/* Render based on auth and loading state */}
             {!token ? (
-                // Pass error state to LoginForm
+                // No token: Show Login Form
                 <LoginForm onLogin={handleLogin} error={error} />
+            ) : loadingUser ? (
+                // Token exists, but fetching user: Show Loading
+                <div className="p-4 text-center text-lg font-medium">Loading...</div>
             ) : currentUser ? (
-                // Clear app-level error once logged in (component errors handled internally)
-                error && setError(null),
+                // Token exists, user fetched: Show Admin or User View
                 currentUser.is_president ? (
                     <AdminView />
                 ) : (
                     <UserView currentUser={currentUser} />
                 )
             ) : (
-                // This state is usually covered by the loadingUser check above,
-                // but serves as a fallback.
-                <div className="p-4 text-center text-lg font-medium">Initializing...</div>
+                // Token exists, loading finished, but no user (fetch failed?): Show Error or Fallback
+                error ? (
+                    <p className="text-red-500 p-4 text-center">Error: {error}</p>
+                 ) : (
+                    <div className="p-4 text-center text-lg font-medium">Failed to load user data.</div>
+                 )
             )}
         </div>
     );
 }
-
-// --- Removed LoginForm Component --- 
-
-// --- Removed AdminView Component --- 
-
-// --- Removed UserView Component --- 
