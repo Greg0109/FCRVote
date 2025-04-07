@@ -32,3 +32,6 @@ reset-db:
 	rm -f voting.db
 	$(PYTHON) -c "from main import Base, engine; Base.metadata.create_all(bind=engine)"
 	@echo "Database reset."
+
+test:
+	$(PYTHON) ${ROOT_DIR}/src/tests/add.py
