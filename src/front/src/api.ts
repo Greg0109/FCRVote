@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Candidate, User, Result, TokenResponse } from './types';
 
 const API_BASE = 'http://localhost:8000';
 
@@ -18,18 +19,19 @@ apiClient.interceptors.request.use((config) => {
 });
 
 // Auth
-export const login = (username: string, password: string) => apiClient.post('/token', new URLSearchParams({ username, password }));
+export const login = (username: string, password: string) =>
+    apiClient.post<TokenResponse>('/token', new URLSearchParams({ username, password }));
 
 // User info
-export const fetchCurrentUser = () => apiClient.get('/users/me');
+export const fetchCurrentUser = () => apiClient.get<User>('/users/me');
 
 // Admin actions
-export const addCandidate = (name: string) => apiClient.post('/admin/add_candidate', { name });
-export const addUser = (username: string, password: string, is_president: boolean) => apiClient.post('/admin/add_user', { username, password, is_president });
+export const addCandidate = (name: string) => apiClient.post<Candidate>('/admin/add_candidate', { name });
+export const addUser = (username: string, password: string, is_president: boolean) => apiClient.post<User>('/admin/add_user', { username, password, is_president });
 
 // Voting actions
-export const fetchCandidates = () => apiClient.get('/voting/candidates');
-export const vote = (candidateId: number, stage: number) => apiClient.post(`/voting/vote/${candidateId}/${stage}`);
-export const fetchResults = (stage: number) => apiClient.get(`/voting/results/${stage}`);
+export const fetchCandidates = () => apiClient.get<Candidate[]>('/voting/candidates');
+export const vote = (candidateId: number, stage: number) => apiClient.post<{ message: string }>(`/voting/vote/${candidateId}/${stage}`);
+export const fetchResults = (stage: number) => apiClient.get<Result[]>(`/voting/results/${stage}`);
 
 export default apiClient; 
