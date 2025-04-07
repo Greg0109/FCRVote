@@ -5,6 +5,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Checkbox } from './ui/checkbox';
 import * as api from '../api';
+import * as types from '../types';
 
 export default function AdminView() {
     const [candidateName, setCandidateName] = useState('');
@@ -13,6 +14,8 @@ export default function AdminView() {
     const [isPresident, setIsPresident] = useState(false);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [candidates, setCandidates] = useState<types.Candidate[]>([]);
+    const [users, setUsers] = useState<types.User[]>([]);
 
     const handleAddCandidate = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -28,6 +31,34 @@ export default function AdminView() {
             console.error("Add candidate failed:", errorMsg, err);
         }
     };
+
+    const handleGetCandidates = async () => {
+        setMessage('');
+        setError('');
+        try {
+            const response = await api.fetchCandidatesList();
+            console.log("Candidates:", response.data);
+            setCandidates(response.data);
+            setMessage('Candidates fetched successfully. Check console for details.');
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.detail || 'Failed to fetch candidates.';
+            setError(errorMsg);
+            console.error("Fetch candidates failed:", errorMsg, err);
+        }
+    }
+
+    const handleRemoveCandidate = async (candidateId: number) => {
+        setMessage('');
+        setError('');
+        try {
+            await api.removeCandidate(candidateId);
+            setMessage(`Candidate with ID "${candidateId}" removed successfully.`);
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.detail || 'Failed to remove candidate.';
+            setError(errorMsg);
+            console.error("Remove candidate failed:", errorMsg, err);
+        }
+    }
 
     const handleAddUser = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -45,6 +76,40 @@ export default function AdminView() {
             console.error("Add user failed:", errorMsg, err);
         }
     };
+
+    const handleGetUsers = async () => {
+        setMessage('');
+        setError('');
+        try {
+            const response = await api.fetchUsers();
+            console.log("Users:", response.data);
+            for (let i = 0; i < response.data.length; i++) {
+                if (response.data[i].username === "admin") {
+                    response.data.splice(i, 1);
+                    break;
+                }
+            }
+            setUsers(response.data);
+            setMessage('Users fetched successfully. Check console for details.');
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.detail || 'Failed to fetch users.';
+            setError(errorMsg);
+            console.error("Fetch users failed:", errorMsg, err);
+        }
+    }
+
+    const handleRemoveUser = async (e: number) => {
+        setMessage('');
+        setError('');
+        try {
+            await api.removeUser(e); // Replace with actual user ID
+            setMessage(`User removed successfully.`);
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.detail || 'Failed to remove user.';
+            setError(errorMsg);
+            console.error("Remove user failed:", errorMsg, err);
+        }
+    }
 
     return (
         <div className="space-y-8 max-w-2xl mx-auto">
@@ -70,6 +135,21 @@ export default function AdminView() {
                         </div>
                         <Button type="submit" className="w-full">Add Candidate</Button>
                     </form>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardContent className="pt-6">
+                    <h3 className="text-xl font-semibold mb-4">Candidates</h3>
+                    <div className="space-y-4">
+                        <Button onClick={handleGetCandidates} className="w-full mb-4">Get Candidates</Button>
+                        {candidates.map((candidate: types.Candidate) => (
+                            <div key={candidate.id} className="flex justify-between items-center border p-2 rounded">
+                                <span>{candidate.name}</span>
+                                <Button onClick={() => handleRemoveCandidate(candidate.id)} className="ml-4">Remove</Button>
+                            </div>
+                        ))}
+                    </div>
                 </CardContent>
             </Card>
 
@@ -112,6 +192,21 @@ export default function AdminView() {
                     </form>
                 </CardContent>
             </Card>
+
+            <Card>
+                <CardContent className="pt-6">
+                    <h3 className="text-xl font-semibold mb-4">Users</h3>
+                    <div className="space-y-4">
+                        <Button onClick={handleGetUsers} className="w-full mb-4">Get Users</Button>
+                        {users.map((user: types.User) => (
+                            <div key={user.id} className="flex justify-between items-center border p-2 rounded">
+                                <span>{user.username}</span>
+                                <Button onClick={() => handleRemoveUser(user.id)} className="ml-4">Remove</Button>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
-} 
+}

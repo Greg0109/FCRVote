@@ -9,6 +9,7 @@ export type User = {
   id: number;
   username: string;
   is_president: boolean;
+  hashed_password: string;
 };
 
 export type Result = {

@@ -27,7 +27,11 @@ export const fetchCurrentUser = () => apiClient.get<User>('/users/me');
 
 // Admin actions
 export const addCandidate = (name: string) => apiClient.post<Candidate>('/admin/add_candidate', { name });
+export const fetchCandidatesList = () => apiClient.get<Candidate[]>('/admin/get_candidates');
+export const removeCandidate = (candidateId: number) => apiClient.delete(`/admin/remove_candidate/${candidateId}`);
 export const addUser = (username: string, password: string, is_president: boolean) => apiClient.post<User>('/admin/add_user', { username, password, is_president });
+export const fetchUsers = () => apiClient.get<User[]>('/admin/get_users');
+export const removeUser = (userId: number) => apiClient.delete(`/admin/remove_user/${userId}`);
 
 // Voting actions
 export const fetchCandidates = () => apiClient.get<Candidate[]>('/voting/candidates');

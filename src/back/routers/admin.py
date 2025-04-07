@@ -16,6 +16,20 @@ def add_candidate(candidate_data: CandidateCreate, db: Session = Depends(get_db)
     db.commit()
     return {"message": "Candidate added"}
 
+@router.get("/get_candidates")
+def get_candidates(db: Session = Depends(get_db)):
+    candidates = db.query(Candidate).all()
+    return candidates
+
+@router.delete("/remove_candidate/{candidate_id}")
+def remove_candidate(candidate_id: int, db: Session = Depends(get_db)):
+    candidate = db.query(Candidate).filter_by(id=candidate_id).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+    db.delete(candidate)
+    db.commit()
+    return {"message": "Candidate removed"}
+
 @router.post("/add_user")
 def add_user(user_data: UserCreate, db: Session = Depends(get_db)):
     if db.query(User).filter_by(username=user_data.username).first():
@@ -23,4 +37,18 @@ def add_user(user_data: UserCreate, db: Session = Depends(get_db)):
     user = User(username=user_data.username, hashed_password=get_password_hash(user_data.password), is_president=user_data.is_president)
     db.add(user)
     db.commit()
-    return {"message": "User added"} 
+    return {"message": "User added"}
+
+@router.get("/get_users")
+def get_users(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    return users
+
+@router.delete("/remove_user/{user_id}")
+def remove_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(User).filter_by(id=user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    db.delete(user)
+    db.commit()
+    return {"message": "User removed"}
