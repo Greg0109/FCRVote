@@ -98,7 +98,7 @@ export default function VotingApp() {
                 <div className="p-4 text-center text-lg font-medium">Loading...</div>
             ) : currentUser ? (
                 // Token exists, user fetched: Show Admin or User View
-                currentUser.is_president ? (
+                currentUser.is_admin ? (
                     <AdminView />
                 ) : (
                     <UserView currentUser={currentUser} />

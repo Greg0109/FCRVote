@@ -13,11 +13,12 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     hashed_password = Column(String)
     is_president = Column(Boolean, default=False)
+    is_admin = Column(Boolean, default=False)
 
     @classmethod
     def add_admin(cls, username, password):
         db = next(get_db())
-        admin = cls(username=username, hashed_password=get_password_hash(password), is_president=True)
+        admin = cls(username=username, hashed_password=get_password_hash(password), is_admin=True)
         db.add(admin)
         db.commit()
         return admin

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -17,6 +17,11 @@ export default function AdminView() {
     const [candidates, setCandidates] = useState<types.Candidate[]>([]);
     const [users, setUsers] = useState<types.User[]>([]);
 
+    useEffect(() => {
+        handleGetCandidates();
+        handleGetUsers();
+    }, []);
+
     const handleAddCandidate = async (e: React.FormEvent) => {
         e.preventDefault();
         setMessage('');
@@ -25,6 +30,7 @@ export default function AdminView() {
             await api.addCandidate(candidateName);
             setMessage(`Candidate "${candidateName}" added successfully.`);
             setCandidateName('');
+            await handleGetCandidates();
         } catch (err: any) {
             const errorMsg = err.response?.data?.detail || 'Failed to add candidate.';
             setError(errorMsg);
@@ -53,6 +59,7 @@ export default function AdminView() {
         try {
             await api.removeCandidate(candidateId);
             setMessage(`Candidate with ID "${candidateId}" removed successfully.`);
+            await handleGetCandidates();
         } catch (err: any) {
             const errorMsg = err.response?.data?.detail || 'Failed to remove candidate.';
             setError(errorMsg);
@@ -70,6 +77,7 @@ export default function AdminView() {
             setNewUsername('');
             setNewPassword('');
             setIsPresident(false);
+            await handleGetUsers();
         } catch (err: any) {
             const errorMsg = err.response?.data?.detail || 'Failed to add user.';
             setError(errorMsg);
@@ -104,6 +112,7 @@ export default function AdminView() {
         try {
             await api.removeUser(e); // Replace with actual user ID
             setMessage(`User removed successfully.`);
+            await handleGetUsers();
         } catch (err: any) {
             const errorMsg = err.response?.data?.detail || 'Failed to remove user.';
             setError(errorMsg);
@@ -142,7 +151,6 @@ export default function AdminView() {
                 <CardContent className="pt-6">
                     <h3 className="text-xl font-semibold mb-4">Candidates</h3>
                     <div className="space-y-4">
-                        <Button onClick={handleGetCandidates} className="w-full mb-4">Get Candidates</Button>
                         {candidates.map((candidate: types.Candidate) => (
                             <div key={candidate.id} className="flex justify-between items-center border p-2 rounded">
                                 <span>{candidate.name}</span>
@@ -197,7 +205,6 @@ export default function AdminView() {
                 <CardContent className="pt-6">
                     <h3 className="text-xl font-semibold mb-4">Users</h3>
                     <div className="space-y-4">
-                        <Button onClick={handleGetUsers} className="w-full mb-4">Get Users</Button>
                         {users.map((user: types.User) => (
                             <div key={user.id} className="flex justify-between items-center border p-2 rounded">
                                 <span>{user.username}</span>

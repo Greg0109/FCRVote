@@ -34,7 +34,7 @@ def remove_candidate(candidate_id: int, db: Session = Depends(get_db)):
 def add_user(user_data: UserCreate, db: Session = Depends(get_db)):
     if db.query(User).filter_by(username=user_data.username).first():
         raise HTTPException(status_code=400, detail="User already exists")
-    user = User(username=user_data.username, hashed_password=get_password_hash(user_data.password), is_president=user_data.is_president)
+    user = User(username=user_data.username, hashed_password=get_password_hash(user_data.password), is_president=user_data.is_president, is_admin=False)
     db.add(user)
     db.commit()
     return {"message": "User added"}

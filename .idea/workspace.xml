@@ -4,10 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2ef65647-e976-42f5-85fb-fb7cfec8e76b" name="Changes" comment="&quot;works&quot;">
+    <list default="true" id="2ef65647-e976-42f5-85fb-fb7cfec8e76b" name="Changes" comment="can add and delete users and candidates">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/back/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/back/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/back/models/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/back/models/models.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/back/routers/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/back/routers/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/front/src/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/back/schemas/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/back/schemas/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/front/src/VotingApp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/VotingApp.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/front/src/components/AdminView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/components/AdminView.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/front/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/types.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/voting.db" beforeDir="false" afterPath="$PROJECT_DIR$/voting.db" afterDir="false" />
@@ -92,7 +95,7 @@
       <updated>1744034947735</updated>
       <workItem from="1744034949200" duration="2261000" />
       <workItem from="1744038356281" duration="2916000" />
-      <workItem from="1744047792799" duration="7886000" />
+      <workItem from="1744047792799" duration="9650000" />
     </task>
     <task id="LOCAL-00001" summary="improve">
       <option name="closed" value="true" />
@@ -134,7 +137,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744052389003</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="can add and delete users and candidates">
+      <option name="closed" value="true" />
+      <created>1744055700615</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1744055700615</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -143,7 +154,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="improve" />
     <MESSAGE value="&quot;works&quot;" />
-    <option name="LAST_COMMIT_MESSAGE" value="&quot;works&quot;" />
+    <MESSAGE value="can add and delete users and candidates" />
+    <option name="LAST_COMMIT_MESSAGE" value="can add and delete users and candidates" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/voting_app$add.coverage" NAME="add Coverage Results" MODIFIED="1744040738883" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />

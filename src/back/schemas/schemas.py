@@ -17,6 +17,7 @@ class UserCreate(BaseModel):
     username: str
     password: str
     is_president: bool = False
+    is_admin: bool = False
 
 class CandidateOut(BaseModel):
     id: int
@@ -29,5 +30,7 @@ class UserOut(BaseModel):
     id: int
     username: str
     is_president: bool
+    is_admin: bool
+
     class Config:
         orm_mode = True 
