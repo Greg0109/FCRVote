@@ -11,3 +11,9 @@ export const RemoveButton = ({ children, ...props }: any) => (
     {children}
   </button>
 );
+
+export const LogoutButton = ({ children, ...props }: any) => (
+  <button className="fcr-logout-button" {...props}>
+    {children}
+  </button>
+);
