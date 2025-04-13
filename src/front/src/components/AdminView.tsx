@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AdminCard, Card, CardContent } from './ui/card';
+import { AdminCard, AdminCandidateCard, Card, CardContent } from './ui/card';
 import { AddPhotoButton, RemoveButton, Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -10,6 +10,7 @@ import '../App.css';
 
 export default function AdminView() {
     const [candidateName, setCandidateName] = useState('');
+    const [candidateDescription, setCandidateDescription] = useState('');
     const [newUsername, setNewUsername] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [isPresident, setIsPresident] = useState(false);
@@ -17,6 +18,8 @@ export default function AdminView() {
     const [error, setError] = useState('');
     const [candidates, setCandidates] = useState<types.Candidate[]>([]);
     const [users, setUsers] = useState<types.User[]>([]);
+    const [photo, setPhoto] = useState('')
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         handleGetCandidates();
@@ -28,9 +31,14 @@ export default function AdminView() {
         setMessage('');
         setError('');
         try {
-            await api.addCandidate(candidateName, '');
+            await api.addCandidate(candidateName, photo, candidateDescription);
             setMessage(`Candidate "${candidateName}" added successfully.`);
+            setPhoto('');
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
             setCandidateName('');
+            setCandidateDescription('');
             await handleGetCandidates();
         } catch (err: any) {
             const errorMsg = err.response?.data?.detail || 'Failed to add candidate.';
@@ -121,6 +129,33 @@ export default function AdminView() {
         }
     }
 
+    const UploadPhoto = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    }
+
+    const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        setMessage('');
+        setError('');
+        try {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                const base64String = reader.result as string;
+                setPhoto(base64String);
+                console.log("Base64 photo string:", base64String);
+                setMessage('Photo uploaded successfully.');
+            };
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.detail || 'Failed to upload photo.';
+            setError(errorMsg);
+            console.error("Photo upload failed:", errorMsg, err);
+        }
+    };
+
     return (
         <div>
             <h2>Admin Panel</h2>
@@ -136,16 +171,31 @@ export default function AdminView() {
                             <form onSubmit={handleAddCandidate}>
                                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
                                     <div>
-                                        <AddPhotoButton/>
+                                        <AddPhotoButton onClick={UploadPhoto}/>
                                     </div>
                                     <div>
-                                        <Label htmlFor="candidateName" label="Candidate Name" />
-                                        <br/>
+                                        <Input
+                                            id="candidatePhoto"
+                                            type="text"
+                                            value={photo}
+                                            readOnly
+                                            required
+                                            hidden
+                                        />
                                         <Input
                                             id="candidateName"
                                             value={candidateName}
                                             onChange={(e) => setCandidateName(e.target.value)}
                                             placeholder="Enter candidate name"
+                                            required
+                                        />
+                                        <br/>
+                                        <Input
+                                            id="candidateDescription"
+                                            type="text"
+                                            value={candidateDescription}
+                                            onChange={(e) => setCandidateDescription(e.target.value)}
+                                            placeholder="Enter candidate description"
                                             required
                                         />
                                     </div>
@@ -164,10 +214,13 @@ export default function AdminView() {
                                 <h3>Candidates</h3>
                                 <div>
                                     {candidates.map((candidate: types.Candidate) => (
-                                        <label key={candidate.id} className="align-horizontal">
-                                            <Label htmlFor="" label={candidate.name} />
-                                            <RemoveButton onClick={() => handleRemoveCandidate(candidate.id)}></RemoveButton>
-                                        </label>
+                                        <AdminCandidateCard
+                                            key={candidate.id}
+                                            photo={candidate.photo}
+                                            name={candidate.name}
+                                            description={candidate.description}
+                                            onRemove={() => handleRemoveCandidate(candidate.id)}
+                                        />
                                     ))}
                                 </div>
                             </div>
@@ -235,6 +288,13 @@ export default function AdminView() {
                     </Card>
                 </div>
             </AdminCard>
+            <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handlePhotoUpload}
+            />
         </div>
     );
 }

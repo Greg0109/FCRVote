@@ -4,14 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2ef65647-e976-42f5-85fb-fb7cfec8e76b" name="Changes" comment="Improve header">
+    <list default="true" id="2ef65647-e976-42f5-85fb-fb7cfec8e76b" name="Changes" comment="add photo to user database">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/back/models/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/back/models/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/back/schemas/schemas.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/back/schemas/schemas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/back/routers/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/back/routers/admin.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/front/src/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/front/src/components/AdminView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/components/AdminView.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/front/src/components/style/button.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/components/style/button.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/front/src/components/ui/button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/components/ui/button.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/front/src/components/style/card.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/components/style/card.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/front/src/components/ui/card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/components/ui/card.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/front/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/types.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/voting.db" beforeDir="false" afterPath="$PROJECT_DIR$/voting.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -133,7 +133,7 @@
       <workItem from="1744038356281" duration="2916000" />
       <workItem from="1744047792799" duration="11093000" />
       <workItem from="1744308603483" duration="582000" />
-      <workItem from="1744543566894" duration="9980000" />
+      <workItem from="1744543566894" duration="12416000" />
     </task>
     <task id="LOCAL-00001" summary="improve">
       <option name="closed" value="true" />
@@ -215,7 +215,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744550903621</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="add photo to user database">
+      <option name="closed" value="true" />
+      <created>1744553596636</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1744553596636</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -229,7 +237,8 @@
     <MESSAGE value="Main css classes work as expected" />
     <MESSAGE value="Styling improved" />
     <MESSAGE value="Improve header" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improve header" />
+    <MESSAGE value="add photo to user database" />
+    <option name="LAST_COMMIT_MESSAGE" value="add photo to user database" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/voting_app$add.coverage" NAME="add Coverage Results" MODIFIED="1744040738883" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />

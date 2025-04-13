@@ -9,9 +9,10 @@ router = APIRouter()
 
 @router.post("/add_candidate")
 def add_candidate(candidate_data: CandidateCreate, db: Session = Depends(get_db)):
+    print(candidate_data)
     if db.query(Candidate).filter_by(name=candidate_data.name).first():
         raise HTTPException(status_code=400, detail="Candidate already exists")
-    candidate = Candidate(name=candidate_data.name)
+    candidate = Candidate(name=candidate_data.name, photo=candidate_data.photo, description=candidate_data.description)
     db.add(candidate)
     db.commit()
     return {"message": "Candidate added"}
