@@ -17,3 +17,9 @@ export const LogoutButton = ({ children, ...props }: any) => (
     {children}
   </button>
 );
+
+export const AddPhotoButton = ({ children, ...props }: any) => (
+    <button className="fcr-add-photo-button" {...props}>
+        {children}
+    </button>
+);

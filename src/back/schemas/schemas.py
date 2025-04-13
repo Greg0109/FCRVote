@@ -11,6 +11,8 @@ class TokenData(BaseModel):
 # Schema for creating a candidate
 class CandidateCreate(BaseModel):
     name: str
+    description: Optional[str] = None
+    photo: Optional[str] = None
 
 # Schema for creating a user
 class UserCreate(BaseModel):
@@ -18,10 +20,13 @@ class UserCreate(BaseModel):
     password: str
     is_president: bool = False
     is_admin: bool = False
+    photo: Optional[str] = None
 
 class CandidateOut(BaseModel):
     id: int
     name: str
+    description: Optional[str] = None
+    photo: Optional[str] = None
     class Config:
         orm_mode = True
 
@@ -29,6 +34,7 @@ class CandidateOut(BaseModel):
 class UserOut(BaseModel):
     id: int
     username: str
+    photo: Optional[str] = None
     is_president: bool
     is_admin: bool
 

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AdminCard, Card, CardContent } from './ui/card';
-import { RemoveButton, Button } from './ui/button';
+import { AddPhotoButton, RemoveButton, Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Checkbox } from './ui/checkbox';
@@ -28,7 +28,7 @@ export default function AdminView() {
         setMessage('');
         setError('');
         try {
-            await api.addCandidate(candidateName);
+            await api.addCandidate(candidateName, '');
             setMessage(`Candidate "${candidateName}" added successfully.`);
             setCandidateName('');
             await handleGetCandidates();
@@ -134,16 +134,21 @@ export default function AdminView() {
                         <CardContent style={{ minHeight: '210px' }}>
                             <h3>Add Candidate</h3>
                             <form onSubmit={handleAddCandidate}>
-                                <div>
-                                    <Label htmlFor="candidateName" label="Candidate Name" />
-                                    <br/>
-                                    <Input
-                                        id="candidateName"
-                                        value={candidateName}
-                                        onChange={(e) => setCandidateName(e.target.value)}
-                                        placeholder="Enter candidate name"
-                                        required
-                                    />
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
+                                    <div>
+                                        <AddPhotoButton/>
+                                    </div>
+                                    <div>
+                                        <Label htmlFor="candidateName" label="Candidate Name" />
+                                        <br/>
+                                        <Input
+                                            id="candidateName"
+                                            value={candidateName}
+                                            onChange={(e) => setCandidateName(e.target.value)}
+                                            placeholder="Enter candidate name"
+                                            required
+                                        />
+                                    </div>
                                 </div>
                                 <br/>
                                 <Button type="submit">Add Candidate</Button>
