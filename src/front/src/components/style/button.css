@@ -75,7 +75,6 @@
 }
 
 .fcr-add-photo-button::before {
-    content: '+';
     font-size: 20px;
     color: #cccccc;
     line-height: 1;

@@ -171,7 +171,13 @@ export default function AdminView() {
                             <form onSubmit={handleAddCandidate}>
                                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
                                     <div>
-                                        <AddPhotoButton onClick={UploadPhoto}/>
+                                        {photo ? (
+                                            <AddPhotoButton onClick={UploadPhoto}>
+                                                <img src={photo} alt="Uploaded" style={{ width: '48px', height: '48px', borderRadius: '50%' }} />
+                                            </AddPhotoButton>
+                                        ) : (
+                                            <AddPhotoButton onClick={UploadPhoto}>+</AddPhotoButton>
+                                        )}
                                     </div>
                                     <div>
                                         <Input
@@ -180,6 +186,14 @@ export default function AdminView() {
                                             value={photo}
                                             readOnly
                                             required
+                                            hidden
+                                        />
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            ref={fileInputRef}
+                                            style={{ display: 'none' }}
+                                            onChange={handlePhotoUpload}
                                             hidden
                                         />
                                         <Input
@@ -288,13 +302,6 @@ export default function AdminView() {
                     </Card>
                 </div>
             </AdminCard>
-            <input
-                type="file"
-                accept="image/*"
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-                onChange={handlePhotoUpload}
-            />
         </div>
     );
 }
