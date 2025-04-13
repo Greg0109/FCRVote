@@ -3,6 +3,8 @@
 export type Candidate = {
   id: number;
   name: string;
+  photo: string;
+  description: string;
 };
 
 export type User = {

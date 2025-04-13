@@ -14,6 +14,7 @@ class User(Base):
     hashed_password = Column(String)
     is_president = Column(Boolean, default=False)
     is_admin = Column(Boolean, default=False)
+    photo = Column(String, nullable=True)
 
     @classmethod
     def add_admin(cls, username, password):
@@ -27,6 +28,8 @@ class Candidate(Base):
     __tablename__ = "candidates"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True)
+    description = Column(String, nullable=True)
+    photo = Column(String, nullable=True)
 
 class Vote(Base):
     __tablename__ = "votes"
