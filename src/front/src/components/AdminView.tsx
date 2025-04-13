@@ -260,8 +260,8 @@ export default function AdminView() {
                                 <br/>
                                 <div>
                                     <Checkbox
-                                        htmlFor="isPresidentAdmin"
-                                        label="Is President (Admin)"
+                                        htmlFor="isPresident"
+                                        label="Is President"
                                         checked={isPresident}
                                         onChange={(e) => setIsPresident(e.target.checked)}
                                     />
@@ -279,7 +279,7 @@ export default function AdminView() {
                             <div>
                                 {users.map((user: types.User) => (
                                     <div key={user.id} className="align-horizontal">
-                                        <Label htmlFor="" label={user.username}/>
+                                        <Label htmlFor="" label={`${user.username}${user.is_president ? ' 👑' : ''}`}/>
                                         <RemoveButton onClick={() => handleRemoveUser(user.id)}></RemoveButton>
                                     </div>
                                 ))}
