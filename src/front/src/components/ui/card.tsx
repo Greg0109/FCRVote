@@ -1,14 +1,16 @@
+import '../style/card.css';
+
 export const Card = ({ children, ...props }: React.HTMLProps<HTMLDivElement>) => (
-  <div className="border rounded p-4 shadow" {...props}>{children}</div>
+  <div className="fcr-card" {...props}>{children}</div>
 );
 export const CardContent = ({ children, ...props }: React.HTMLProps<HTMLDivElement>) => (
-  <div {...props}>{children}</div>
+  <div className="fcr-card-content" {...props}>{children}</div>
 );
 
 export const CardHeader = ({ children, ...props }: React.HTMLProps<HTMLDivElement>) => (
-  <div className="mb-4" {...props}>{children}</div>
+  <div className="fcr-card-title" {...props}>{children}</div>
 );
 
 export const CardTitle = ({ children, ...props }: React.HTMLProps<HTMLHeadingElement>) => (
-  <h2 className="text-xl font-bold" {...props}>{children}</h2>
+  <h2 className="fcr-card-title" {...props}>{children}</h2>
 );

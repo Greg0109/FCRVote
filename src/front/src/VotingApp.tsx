@@ -5,6 +5,8 @@ import { User, TokenResponse } from './types';
 import LoginForm from './components/LoginForm'; // Import extracted component
 import AdminView from './components/AdminView'; // Import extracted component
 import UserView from './components/UserView'; // Import extracted component
+import './components/style/label.css';
+import './App.css';
 
 // Remove unused imports: Card, CardContent, CardHeader, CardTitle, Input, Label, Checkbox, Candidate, Result
 
@@ -81,9 +83,9 @@ export default function VotingApp() {
 
     // Refined Render Logic
     return (
-        <div className="p-4 md:p-8 max-w-5xl mx-auto font-sans">
-            <header className="flex justify-between items-center mb-8 pb-4 border-b border-gray-200">
-                <h1 className="text-3xl md:text-4xl font-bold text-gray-800">Voting Application</h1>
+        <div className="App">
+            <header>
+                <h1 className="fcr-title">Voting Application</h1>
                 {token && (
                     <Button onClick={handleLogout} variant="outline">Logout</Button>
                 )}
@@ -95,7 +97,7 @@ export default function VotingApp() {
                 <LoginForm onLogin={handleLogin} error={error} />
             ) : loadingUser ? (
                 // Token exists, but fetching user: Show Loading
-                <div className="p-4 text-center text-lg font-medium">Loading...</div>
+                <div>Loading...</div>
             ) : currentUser ? (
                 // Token exists, user fetched: Show Admin or User View
                 currentUser.is_admin ? (

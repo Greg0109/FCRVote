@@ -1,4 +1,5 @@
 import React from 'react';
+import '../style/label.css';
 
 export const Label = ({
   label,
@@ -10,7 +11,7 @@ export const Label = ({
   className?: string;
 }) => (
   <label
-    className={`block text-gray-700 text-sm font-bold mb-2 ${className || ''}`.trim()}
+    className={`fcr-label ${className || ''}`.trim()}
     htmlFor={htmlFor}
   >
     {label}
