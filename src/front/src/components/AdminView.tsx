@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from './ui/card';
-import { Button } from './ui/button';
+import { AdminCard, Card, CardContent } from './ui/card';
+import { RemoveButton, Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Checkbox } from './ui/checkbox';
 import * as api from '../api';
 import * as types from '../types';
+import '../App.css';
 
 export default function AdminView() {
     const [candidateName, setCandidateName] = useState('');
@@ -121,101 +122,114 @@ export default function AdminView() {
     }
 
     return (
-        <div className="space-y-8 max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold text-center">Admin Panel</h2>
+        <div>
+            <h2>Admin Panel</h2>
 
-            {message && <p className="text-green-600 p-3 bg-green-100 border border-green-300 rounded text-center">{message}</p>}
-            {error && <p className="text-red-600 p-3 bg-red-100 border border-red-300 rounded text-center">Error: {error}</p>}
+            {message && <p>{message}</p>}
+            {error && <p>Error: {error}</p>}
 
-            <div className="flex flex-row">
-                <Card>
-                    <CardContent className="pt-6">
-                        <h3 className="text-xl font-semibold mb-4">Add Candidate</h3>
-                        <form onSubmit={handleAddCandidate} className="space-y-4">
-                            <div>
-                                <Label htmlFor="candidateName" label="Candidate Name" className="block text-sm font-medium text-gray-700 mb-1" />
-                                <Input
-                                    id="candidateName"
-                                    value={candidateName}
-                                    onChange={(e) => setCandidateName(e.target.value)}
-                                    placeholder="Enter candidate name"
-                                    required
-                                    className="mt-1 block w-full"
-                                />
-                            </div>
-                            <Button type="submit" className="w-full">Add Candidate</Button>
-                        </form>
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardContent className="pt-6">
-                        <h3 className="text-xl font-semibold mb-4">Candidates</h3>
-                        <div className="space-y-4">
-                            {candidates.map((candidate: types.Candidate) => (
-                                <div key={candidate.id} className="flex justify-between items-center border p-2 rounded">
-                                    <span>{candidate.name}</span>
-                                    <Button onClick={() => handleRemoveCandidate(candidate.id)} className="ml-4">Remove</Button>
+            <AdminCard>
+                <div>
+                    <Card>
+                        <CardContent style={{ minHeight: '210px' }}>
+                            <h3>Add Candidate</h3>
+                            <form onSubmit={handleAddCandidate}>
+                                <div>
+                                    <Label htmlFor="candidateName" label="Candidate Name" />
+                                    <br/>
+                                    <Input
+                                        id="candidateName"
+                                        value={candidateName}
+                                        onChange={(e) => setCandidateName(e.target.value)}
+                                        placeholder="Enter candidate name"
+                                        required
+                                    />
                                 </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
+                                <br/>
+                                <Button type="submit">Add Candidate</Button>
+                            </form>
+                        </CardContent>
+                    </Card>
 
-                <Card>
-                    <CardContent className="pt-6">
-                        <h3 className="text-xl font-semibold mb-4">Add User</h3>
-                        <form onSubmit={handleAddUser} className="space-y-4">
-                            <div>
-                                <Label htmlFor="newUsername" label="Username" className="block text-sm font-medium text-gray-700 mb-1"/>
-                                <Input
-                                    id="newUsername"
-                                    value={newUsername}
-                                    onChange={(e) => setNewUsername(e.target.value)}
-                                    placeholder="Enter username"
-                                    required
-                                    className="mt-1 block w-full"
-                                />
-                            </div>
-                            <div>
-                                <Label htmlFor="newPassword" label="Password" className="block text-sm font-medium text-gray-700 mb-1"/>
-                                <Input
-                                    id="newPassword"
-                                    type="password"
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    placeholder="Enter password"
-                                    required
-                                    className="mt-1 block w-full"
-                                />
-                            </div>
-                            <div className="flex items-center space-x-2 pt-2">
-                                <Checkbox
-                                    htmlFor="isPresidentAdmin"
-                                    label="Is President (Admin)"
-                                    checked={isPresident}
-                                    onChange={(e) => setIsPresident(e.target.checked)}
-                                />
-                            </div>
-                            <Button type="submit" className="w-full">Add User</Button>
-                        </form>
-                    </CardContent>
-                </Card>
+                    <br/>
 
-                <Card>
-                    <CardContent className="pt-6">
-                        <h3 className="text-xl font-semibold mb-4">Users</h3>
-                        <div className="space-y-4">
-                            {users.map((user: types.User) => (
-                                <div key={user.id} className="flex justify-between items-center border p-2 rounded">
-                                    <span>{user.username}</span>
-                                    <Button onClick={() => handleRemoveUser(user.id)} className="ml-4">Remove</Button>
+                    <Card>
+                        <CardContent>
+                            <div>
+                                <h3>Candidates</h3>
+                                <div>
+                                    {candidates.map((candidate: types.Candidate) => (
+                                        <label key={candidate.id} className="align-horizontal">
+                                            <Label htmlFor="" label={candidate.name} />
+                                            <RemoveButton onClick={() => handleRemoveCandidate(candidate.id)}></RemoveButton>
+                                        </label>
+                                    ))}
                                 </div>
-                            ))}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <div>
+                    <Card>
+                        <CardContent>
+                            <h3>Add User</h3>
+                            <form onSubmit={handleAddUser}>
+                                <div>
+                                    <Label htmlFor="newUsername" label="Username" />
+                                    <br/>
+                                    <Input
+                                        id="newUsername"
+                                        value={newUsername}
+                                        onChange={(e) => setNewUsername(e.target.value)}
+                                        placeholder="Enter username"
+                                        required
+                                    />
+                                </div>
+                                <br/>
+                                <div>
+                                    <Label htmlFor="newPassword" label="Password" />
+                                    <br/>
+                                    <Input
+                                        id="newPassword"
+                                        type="password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        placeholder="Enter password"
+                                        required
+                                    />
+                                </div>
+                                <br/>
+                                <div>
+                                    <Checkbox
+                                        htmlFor="isPresidentAdmin"
+                                        label="Is President (Admin)"
+                                        checked={isPresident}
+                                        onChange={(e) => setIsPresident(e.target.checked)}
+                                    />
+                                </div>
+                                <Button type="submit">Add User</Button>
+                            </form>
+                        </CardContent>
+                    </Card>
+
+                    <br/>
+
+                    <Card>
+                        <CardContent>
+                            <h3>Users</h3>
+                            <div>
+                                {users.map((user: types.User) => (
+                                    <div key={user.id} className="align-horizontal">
+                                        <Label htmlFor="" label={user.username}/>
+                                        <RemoveButton onClick={() => handleRemoveUser(user.id)}></RemoveButton>
+                                    </div>
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
+            </AdminCard>
         </div>
     );
 }

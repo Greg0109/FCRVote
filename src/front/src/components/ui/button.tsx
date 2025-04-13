@@ -5,3 +5,9 @@ export const Button = ({ children, ...props }: any) => (
     {children}
   </button>
 );
+
+export const RemoveButton = ({ children, ...props }: any) => (
+  <button className="fcr-remove-button" {...props}>
+    {children}
+  </button>
+);
