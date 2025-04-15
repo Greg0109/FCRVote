@@ -37,6 +37,7 @@ class VotingSession(Base):
     name = Column(String, unique=True)
     description = Column(String, nullable=True)
     active = Column(Boolean, default=True)
+    stage = Column(Integer)  # 1 to 3
 
 class Vote(Base):
     __tablename__ = "votes"
