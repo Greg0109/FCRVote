@@ -10,7 +10,6 @@ interface UserViewProps {
 export default function UserView({ currentUser }: UserViewProps) {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [selectedCandidate, setSelectedCandidate] = useState<number | null>(null);
-  const [results, setResults] = useState<Result[] | null>(null);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [currentStage, setCurrentStage] = useState(1);
@@ -19,27 +18,15 @@ export default function UserView({ currentUser }: UserViewProps) {
   const [isPolling, setIsPolling] = useState(false);
   const [waitingMessage, setWaitingMessage] = useState('');
 
-  const fetchCandidatesAndResults = useCallback(async (stage: number) => {
+  const fetchCandidates = useCallback(async (stage: number) => {
     setError('');
     setMessage('');
     try {
-      const [candidatesRes, resultsRes] = await Promise.all([
+      const [candidatesRes] = await Promise.all([
         api.fetchCandidates(stage),
-        api.fetchResults(stage),
       ]);
       const fetchedCandidates: Candidate[] = candidatesRes.data;
-      const fetchedResultsData: Omit<Result, 'candidate_name'>[] = resultsRes.data;
-
-      const candidateMap = new Map(fetchedCandidates.map(c => [c.id, c.name]));
-      const resultsWithNames: Result[] = fetchedResultsData.map(r => ({
-        ...r,
-        candidate_name: candidateMap.get(r.candidate_id) || 'Unknown Candidate'
-      }));
-
       setCandidates(fetchedCandidates);
-      setResults(resultsWithNames);
-      const userVotes = fetchedResultsData.filter(r => r.user_id === currentUser.id).length;
-      setVotesRemaining(3 - userVotes);
     } catch (err: any) {
       const errorMsg = err.response?.data?.detail || 'Failed to load voting data.';
       setError(errorMsg);
@@ -53,15 +40,16 @@ export default function UserView({ currentUser }: UserViewProps) {
       const newStage = Number(sessionRes.data.stage);
       
       if (newStage !== currentStage) {
+        setVotesRemaining(1);
         setCurrentStage(newStage);
-        await fetchCandidatesAndResults(newStage);
+        await fetchCandidates(newStage);
         setIsPolling(false);
         setWaitingMessage('');
       }
     } catch (err: any) {
       console.error("Failed to check voting status:", err);
     }
-  }, [currentStage, fetchCandidatesAndResults]);
+  }, [currentStage, fetchCandidates]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -69,7 +57,7 @@ export default function UserView({ currentUser }: UserViewProps) {
         const sessionRes = await api.getCurrentVotingSession();
         const stage = sessionRes.data.stage;
         setCurrentStage(Number(stage));
-        await fetchCandidatesAndResults(stage);
+        await fetchCandidates(stage);
       } catch (err: any) {
         const errorMsg = err.response?.data?.detail || 'Failed to load session.';
         setError(errorMsg);
@@ -77,7 +65,7 @@ export default function UserView({ currentUser }: UserViewProps) {
       }
     };
     loadData();
-  }, [fetchCandidatesAndResults]);
+  }, [fetchCandidates]);
 
   useEffect(() => {
     if (votesRemaining === 3) {
@@ -88,6 +76,7 @@ export default function UserView({ currentUser }: UserViewProps) {
       setTitle(`Round ${currentStage}. Choose the 3rd Winner (1 point).`);
     } else if (votesRemaining === 0) {
       setTitle(`Round ${currentStage}. Voting Completed!`);
+      setIsPolling(true);
       setWaitingMessage('Waiting for other users to finish voting...');
     }
   }, [votesRemaining, currentStage]);
@@ -119,8 +108,7 @@ export default function UserView({ currentUser }: UserViewProps) {
       setSelectedCandidate(null);
       const newVotesRemaining = votesRemaining - 1;
       setVotesRemaining(newVotesRemaining);
-      await fetchCandidatesAndResults(currentStage);
-      setIsPolling(true);
+      await fetchCandidates(currentStage);
     } catch (err: any) {
       let errorMsg = 'Failed to submit vote.';
       if (err.response?.data?.detail === "You have already cast all your votes for this stage") {

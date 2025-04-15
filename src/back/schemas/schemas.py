@@ -54,3 +54,12 @@ class SessionOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+class UserVotesOut(BaseModel):
+    user_id: int
+    session_id: int
+    stage: int
+    votes: int
+
+    class Config:
+        orm_mode = True
