@@ -68,16 +68,26 @@ export default function UserView({ currentUser }: UserViewProps) {
   }, [fetchCandidates]);
 
   useEffect(() => {
-    if (votesRemaining === 3) {
-      setTitle(`Round ${currentStage}. Choose the 1st Winner (3 points) 🏆`);
-    } else if (votesRemaining === 2) {
-      setTitle(`Round ${currentStage}. Choose the 2nd Winner (2 points).`);
-    } else if (votesRemaining === 1) {
-      setTitle(`Round ${currentStage}. Choose the 3rd Winner (1 point).`);
-    } else if (votesRemaining === 0) {
-      setTitle(`Round ${currentStage}. Voting Completed!`);
-      setIsPolling(true);
-      setWaitingMessage('Waiting for other users to finish voting...');
+    if (currentStage === 1) {
+      if (votesRemaining === 3) {
+        setTitle(`Round ${currentStage}. Choose the 1st Winner (3 points) 🏆`);
+      } else if (votesRemaining === 2) {
+        setTitle(`Round ${currentStage}. Choose the 2nd Winner (2 points).`);
+      } else if (votesRemaining === 1) {
+        setTitle(`Round ${currentStage}. Choose the 3rd Winner (1 point).`);
+      } else if (votesRemaining === 0) {
+        setTitle(`Round ${currentStage}. Voting Completed!`);
+        setIsPolling(true);
+        setWaitingMessage('Waiting for other users to finish voting...');
+      }
+    } else {
+        if (votesRemaining === 1) {
+            setTitle(`Round ${currentStage}. Choose the Winner (1 point).`);
+        } else if (votesRemaining === 0) {
+            setTitle(`Round ${currentStage}. Voting Completed!`);
+            setIsPolling(true);
+            setWaitingMessage('Waiting for other users to finish voting...');
+        }
     }
   }, [votesRemaining, currentStage]);
 

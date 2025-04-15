@@ -63,7 +63,9 @@ def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current
         session_id=current_session.id
     ).count()
     
-    if vote_count >= 3:
+    if vote_count >= 3 and stage == 1:
+        raise HTTPException(status_code=400, detail="You have already cast all your votes for this stage")
+    elif vote_count >= 1 and stage > 1:
         raise HTTPException(status_code=400, detail="You have already cast all your votes for this stage")
     
     # Check if candidate exists
@@ -72,7 +74,7 @@ def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current
         raise HTTPException(status_code=404, detail="Candidate not found")
     
     # Calculate points based on vote order (3, 2, 1)
-    points = 3 - vote_count
+    points = 3 - vote_count if stage == 1 else 1
     
     # Record the vote
     vote = Vote(
@@ -92,19 +94,19 @@ def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current
         session_id=current_session.id
     ).distinct().count()
     
-    if users_voted == total_users and vote_count == 2:  # Last vote for this user
-        # Check if all users have cast all their votes
+    if (users_voted == total_users and ((stage == 1 and vote_count == 2) or (stage > 1 and vote_count == 0))):  # Último voto para este usuario
+        # Verificar si todos los usuarios han emitido todos sus votos
         total_votes = db.query(Vote).filter_by(
             stage=stage,
             session_id=current_session.id
         ).count()
-        
-        if total_votes == total_users * 3:  # All users have cast all their votes
-            # Move to next stage
+
+        if (stage == 1 and total_votes == total_users * 3) or (stage > 1 and total_votes == total_users):  # Todos los usuarios han emitido todos sus votos
+            # Pasar a la siguiente etapa
             current_session.stage = stage + 1
             db.commit()
             return {"message": "Vote recorded. All users have completed voting for this stage. Moving to next stage."}
-    
+
     return {"message": "Vote recorded"}
 
 @router.get("/results/{stage}")
