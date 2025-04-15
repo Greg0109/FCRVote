@@ -6,12 +6,45 @@ from ..models.models import User, Candidate, Vote, VotingSession
 from ..schemas.schemas import CandidateOut
 from ..auth.auth import get_current_user
 from sqlalchemy import func
+from collections import defaultdict
 
 router = APIRouter()
 
-@router.get("/candidates", response_model=List[CandidateOut])
-def list_candidates(db: Session = Depends(get_db)):
-    return db.query(Candidate).all()
+@router.get("/candidates/{stage}", response_model=List[CandidateOut])
+def list_candidates(stage: int = 1, db: Session = Depends(get_db)):
+    if stage == 1:
+        return db.query(Candidate).all()
+    
+    # For stages 2 and 3, get only the top candidates from previous stage
+    current_session = db.query(VotingSession).filter_by(active=True).first()
+    if not current_session:
+        raise HTTPException(status_code=400, detail="No active voting session")
+    
+    # Get results from previous stage
+    prev_stage = stage - 1
+    results = defaultdict(int)
+    for v in db.query(Vote).filter_by(stage=prev_stage, session_id=current_session.id).all():
+        results[v.candidate_id] += v.points
+    
+    # Sort by points and get top candidates
+    sorted_results = sorted(results.items(), key=lambda x: x[1], reverse=True)
+    
+    # Get top 2 candidates, or 3 if there's a tie for second place
+    top_candidates = []
+    if len(sorted_results) >= 2:
+        top_candidates = [sorted_results[0][0]]  # First place
+        if len(sorted_results) >= 3 and sorted_results[1][1] == sorted_results[2][1]:
+            # If there's a tie for second place, include all tied candidates
+            second_place_points = sorted_results[1][1]
+            for candidate_id, points in sorted_results[1:]:
+                if points == second_place_points:
+                    top_candidates.append(candidate_id)
+                else:
+                    break
+        else:
+            top_candidates.append(sorted_results[1][0])  # Second place
+    
+    return db.query(Candidate).filter(Candidate.id.in_(top_candidates)).all()
 
 @router.post("/vote/{candidate_id}/{stage}")
 def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):

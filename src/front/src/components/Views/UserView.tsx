@@ -22,7 +22,7 @@ export default function UserView({ currentUser }: UserViewProps) {
     setMessage('');
     try {
       const [candidatesRes, resultsRes] = await Promise.all([
-        api.fetchCandidates(),
+        api.fetchCandidates(stage),
         api.fetchResults(stage),
       ]);
       const fetchedCandidates: Candidate[] = candidatesRes.data;

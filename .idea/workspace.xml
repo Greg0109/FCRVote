@@ -4,11 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2ef65647-e976-42f5-85fb-fb7cfec8e76b" name="Changes" comment="Only users count for the voting, not the admin">
-      <change afterPath="$PROJECT_DIR$/src/front/src/components/style/user.css" afterDir="false" />
+    <list default="true" id="2ef65647-e976-42f5-85fb-fb7cfec8e76b" name="Changes" comment="Can vote different points and per stage">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/back/routers/voting.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/back/routers/voting.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/front/src/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/front/src/components/Views/UserView.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/front/src/components/Views/UserView.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/voting.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/voting.db" beforeDir="false" afterPath="$PROJECT_DIR$/voting.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,6 +139,7 @@
       <workItem from="1744621010402" duration="66000" />
       <workItem from="1744621494338" duration="9399000" />
       <workItem from="1744733591881" duration="4612000" />
+      <workItem from="1744753242691" duration="646000" />
     </task>
     <task id="LOCAL-00001" summary="improve">
       <option name="closed" value="true" />
@@ -267,7 +269,15 @@
       <option name="project" value="LOCAL" />
       <updated>1744737739549</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Can vote different points and per stage">
+      <option name="closed" value="true" />
+      <created>1744753381734</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1744753381734</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -298,7 +308,8 @@
     <MESSAGE value="add voting sessions" />
     <MESSAGE value="add voting sessions model and router" />
     <MESSAGE value="I can vote!" />
-    <option name="LAST_COMMIT_MESSAGE" value="I can vote!" />
+    <MESSAGE value="Can vote different points and per stage" />
+    <option name="LAST_COMMIT_MESSAGE" value="Can vote different points and per stage" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/voting_app$add.coverage" NAME="add Coverage Results" MODIFIED="1744040738883" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/tests" />
