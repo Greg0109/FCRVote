@@ -24,4 +24,11 @@ export type Result = {
 export type TokenResponse = {
   access_token: string;
   token_type: string;
-}; 
+};
+
+export type VotingSession = {
+    id: number;
+    name: string;
+    description: string;
+    is_active: boolean;
+}

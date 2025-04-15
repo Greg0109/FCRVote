@@ -31,9 +31,17 @@ class Candidate(Base):
     description = Column(String, nullable=True)
     photo = Column(String, nullable=True)
 
+class VotingSession(Base):
+    __tablename__ = "voting_sessions"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True)
+    description = Column(String, nullable=True)
+    active = Column(Boolean, default=True)
+
 class Vote(Base):
     __tablename__ = "votes"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     candidate_id = Column(Integer, ForeignKey("candidates.id"))
-    stage = Column(Integer)  # 1 or 2
+    session_id = Column(Integer, ForeignKey("voting_sessions.id"))
+    stage = Column(Integer)  # 1 to 3

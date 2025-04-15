@@ -39,4 +39,18 @@ class UserOut(BaseModel):
     is_admin: bool
 
     class Config:
-        orm_mode = True 
+        orm_mode = True
+
+class SessionCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    active: Optional[bool] = True
+
+class SessionOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    active: bool
+
+    class Config:
+        orm_mode = True

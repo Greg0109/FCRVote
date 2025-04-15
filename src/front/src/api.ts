@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Candidate, User, Result, TokenResponse } from './types';
+import { Candidate, User, Result, TokenResponse, VotingSession } from './types';
 
 const API_BASE = 'http://localhost:8000';
 
@@ -32,6 +32,13 @@ export const removeCandidate = (candidateId: number) => apiClient.delete(`/admin
 export const addUser = (username: string, password: string, is_president: boolean) => apiClient.post<User>('/admin/add_user', { username, password, is_president });
 export const fetchUsers = () => apiClient.get<User[]>('/admin/get_users');
 export const removeUser = (userId: number) => apiClient.delete(`/admin/remove_user/${userId}`);
+
+// Voting sessions
+export const startVotingSession = () => apiClient.post<{ message: string }>('/voting_sessions/start_session');
+export const endVotingSession = () => apiClient.post<{ message: string }>('/voting_sessions/end_session');
+export const getCurrentVotingSession = () => apiClient.get<VotingSession>('/voting_sessions/current_session');
+export const getAllVotingSessions = () => apiClient.get<VotingSession[]>('/voting_sessions/sessions');
+export const deleteVotingSession = (sessionId: number) => apiClient.delete(`/voting_sessions/delete_session/${sessionId}`);
 
 // Voting actions
 export const fetchCandidates = () => apiClient.get<Candidate[]>('/voting/candidates');

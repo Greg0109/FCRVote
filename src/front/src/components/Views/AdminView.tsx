@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AdminCard, AdminCandidateCard, Card, CardContent } from './ui/card';
-import { AddPhotoButton, RemoveButton, Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import { Checkbox } from './ui/checkbox';
-import * as api from '../api';
-import * as types from '../types';
-import '../App.css';
+import { AdminCard, AdminCandidateCard, Card, CardContent } from '../ui/card';
+import { AddPhotoButton, RemoveButton, Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import { Checkbox } from '../ui/checkbox';
+import * as api from '../../api';
+import * as types from '../../types';
+import '../../App.css';
 
 export default function AdminView() {
     const [candidateName, setCandidateName] = useState('');
@@ -19,11 +19,15 @@ export default function AdminView() {
     const [candidates, setCandidates] = useState<types.Candidate[]>([]);
     const [users, setUsers] = useState<types.User[]>([]);
     const [photo, setPhoto] = useState('')
+    const [currentSession, setCurrentSession] = useState<types.VotingSession | null>(null);
+    const [pastSessions, setPastSessions] = useState<types.VotingSession[]>([]);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         handleGetCandidates();
         handleGetUsers();
+        handleGetCurrentVotingSessions();
+        handleGetAllVotingSessions();
     }, []);
 
     const handleAddCandidate = async (e: React.FormEvent) => {
@@ -155,6 +159,83 @@ export default function AdminView() {
             console.error("Photo upload failed:", errorMsg, err);
         }
     };
+
+    const handleGetCurrentVotingSessions = async () => {
+        setMessage('');
+        setError('');
+        try {
+            const response = await api.getCurrentVotingSession();
+            console.log("Sessions:", response.data);
+            setCurrentSession(response.data);
+            setMessage('Sessions fetched successfully. Check console for details.');
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.detail || 'Failed to fetch sessions.';
+            setError(errorMsg);
+            console.error("Fetch sessions failed:", errorMsg, err);
+        }
+    }
+
+    const handleGetAllVotingSessions = async () => {
+        setMessage('');
+        setError('');
+        try {
+            const response = await api.getAllVotingSessions();
+            console.log("All Sessions:", response.data);
+            setPastSessions(response.data);
+            setMessage('All sessions fetched successfully. Check console for details.');
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.detail || 'Failed to fetch all sessions.';
+            setError(errorMsg);
+            console.error("Fetch all sessions failed:", errorMsg, err);
+        }
+    }
+
+    const handleStartVotingSession = async () => {
+        setMessage('');
+        setError('');
+        try {
+            const response = await api.startVotingSession();
+            console.log("Start Session:", response.data);
+            setMessage('Voting session started successfully.');
+            await handleGetCurrentVotingSessions();
+            await handleGetAllVotingSessions();
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.detail || 'Failed to start voting session.';
+            setError(errorMsg);
+            console.error("Start session failed:", errorMsg, err);
+        }
+    }
+
+    const handleEndVotingSession = async () => {
+        setMessage('');
+        setError('');
+        try {
+            const response = await api.endVotingSession();
+            console.log("End Session:", response.data);
+            setMessage('Voting session ended successfully.');
+            setCurrentSession(null);
+            await handleGetCurrentVotingSessions();
+            await handleGetAllVotingSessions();
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.detail || 'Failed to end voting session.';
+            setError(errorMsg);
+            console.error("End session failed:", errorMsg, err);
+        }
+    }
+
+    const handleDeleteSession = async (sessionId: number) => {
+        setMessage('');
+        setError('');
+        try {
+            await api.deleteVotingSession(sessionId);
+            setMessage(`Session with ID "${sessionId}" deleted successfully.`);
+            await handleGetAllVotingSessions();
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.detail || 'Failed to delete session.';
+            setError(errorMsg);
+            console.error("Delete session failed:", errorMsg, err);
+        }
+    }
 
     return (
         <div>
@@ -298,6 +379,41 @@ export default function AdminView() {
                                     </div>
                                 ))}
                             </div>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <div>
+                    <Card>
+                        <CardContent>
+                            <h3>Sessions</h3>
+
+                            {/* Sesión activa */}
+                            {currentSession ? (
+                                <div>
+                                    <p>Active Session: {currentSession.name}</p>
+                                    <Button onClick={handleEndVotingSession}>End Session</Button>
+                                </div>
+                            ) : (
+                                <Button onClick={handleStartVotingSession}>Start New Session</Button>
+                            )}
+
+                            <br />
+
+                            {/* Lista de sesiones pasadas */}
+                            <h4>Past Sessions</h4>
+                            {pastSessions.length > 0 ? (
+                                <ul>
+                                    {pastSessions.map((session) => (
+                                        <li key={session.id} className="flex justify-between items-center">
+                                            <span>{session.name} - {session.description}</span>
+                                            <Button onClick={() => handleDeleteSession(session.id)}>Delete</Button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>No past sessions available.</p>
+                            )}
                         </CardContent>
                     </Card>
                 </div>

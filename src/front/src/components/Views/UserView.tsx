@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import * as api from '../api'; // Adjust path
-import { Candidate, Result, User } from '../types'; // Adjust path
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { Button } from '../ui/button';
+import * as api from '../../api'; // Adjust path
+import { Candidate, Result, User } from '../../types'; // Adjust path
 
 interface UserViewProps {
     currentUser: User;

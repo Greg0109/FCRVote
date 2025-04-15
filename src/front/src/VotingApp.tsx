@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import * as api from './api';
 import { User } from './types';
 import FCRHeader from "./components/ui/header";
-import LoginForm from './components/LoginForm'; // Import extracted component
-import AdminView from './components/AdminView'; // Import extracted component
-import UserView from './components/UserView'; // Import extracted component
+import LoginForm from './components/Views/LoginForm'; // Import extracted component
+import AdminView from './components/Views/AdminView'; // Import extracted component
+import UserView from './components/Views/UserView'; // Import extracted component
 import './components/style/label.css';
 import './App.css';
 
