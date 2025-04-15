@@ -46,3 +46,4 @@ class Vote(Base):
     candidate_id = Column(Integer, ForeignKey("candidates.id"))
     session_id = Column(Integer, ForeignKey("voting_sessions.id"))
     stage = Column(Integer)  # 1 to 3
+    points = Column(Integer, default=0)  # Points awarded for this vote (3, 2, or 1)

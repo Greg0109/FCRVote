@@ -38,12 +38,16 @@ def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
     
+    # Calculate points based on vote order (3, 2, 1)
+    points = 3 - vote_count
+    
     # Record the vote
     vote = Vote(
         user_id=current_user.id,
         candidate_id=candidate_id,
         stage=stage,
-        session_id=current_session.id
+        session_id=current_session.id,
+        points=points
     )
     db.add(vote)
     db.commit()
@@ -75,9 +79,9 @@ def results(stage: int, db: Session = Depends(get_db)):
     from collections import defaultdict
     results = defaultdict(int)
     for v in db.query(Vote).filter_by(stage=stage).all():
-        results[v.candidate_id] += 1
+        results[v.candidate_id] += v.points
     sorted_results = sorted(results.items(), key=lambda x: x[1], reverse=True)
-    return [{"candidate_id": cid, "votes": count} for cid, count in sorted_results]
+    return [{"candidate_id": cid, "points": count} for cid, count in sorted_results]
 
 @router.post("/resolve_tie/{stage}")
 def resolve_tie(stage: int, winner_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
