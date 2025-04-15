@@ -23,6 +23,7 @@ def start_session(db: Session = Depends(get_db)):
         name=f"Session_{amount_of_sessions + 1}",
         description=str(todays_date),
         active=True,
+        stage=1
     )
     db.add(session)
     db.commit()

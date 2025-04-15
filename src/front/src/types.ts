@@ -15,11 +15,12 @@ export type User = {
   hashed_password: string;
 };
 
-export type Result = {
-  candidate_id: number;
-  votes: number;
-  candidate_name?: string; // Added during frontend processing
-};
+export interface Result {
+    candidate_id: number;
+    candidate_name: string;
+    votes: number;
+    user_id: number;
+}
 
 export type TokenResponse = {
   access_token: string;
@@ -31,4 +32,5 @@ export type VotingSession = {
     name: string;
     description: string;
     is_active: boolean;
+    stage: number;
 }

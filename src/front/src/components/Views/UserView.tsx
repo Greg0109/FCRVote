@@ -14,15 +14,16 @@ export default function UserView({ currentUser }: UserViewProps) {
     const [results, setResults] = useState<Result[] | null>(null);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
-    const VOTE_STAGE = 1; // Hardcoded for simplicity
+    const [currentStage, setCurrentStage] = useState(1);
+    const [votesRemaining, setVotesRemaining] = useState(3);
 
-    const fetchCandidatesAndResults = useCallback(async () => {
+    const fetchCandidatesAndResults = useCallback(async (stage: number) => {
         setError('');
         setMessage('');
         try {
             const [candidatesRes, resultsRes] = await Promise.all([
                 api.fetchCandidates(),
-                api.fetchResults(VOTE_STAGE)
+                api.fetchResults(stage),
             ]);
 
             const fetchedCandidates: Candidate[] = candidatesRes.data;
@@ -36,15 +37,32 @@ export default function UserView({ currentUser }: UserViewProps) {
 
             setCandidates(fetchedCandidates);
             setResults(resultsWithNames);
+
+            const userVotes = fetchedResultsData.filter(r => r.user_id === currentUser.id).length;
+            setVotesRemaining(3 - userVotes);
         } catch (err: any) {
             const errorMsg = err.response?.data?.detail || 'Failed to load voting data.';
             setError(errorMsg);
             console.error("Fetch data failed:", errorMsg, err);
         }
-    }, []);
+    }, [currentUser.id]);
 
     useEffect(() => {
-        fetchCandidatesAndResults();
+        const loadData = async () => {
+            try {
+                const sessionRes = await api.getCurrentVotingSession();
+                const stage = sessionRes.data.stage;
+                console.log("Current stage from session:", stage);
+                console.log(sessionRes)
+                setCurrentStage(Number(stage));
+                await fetchCandidatesAndResults(stage);
+            } catch (err: any) {
+                const errorMsg = err.response?.data?.detail || 'Failed to load session.';
+                setError(errorMsg);
+                console.error("Session fetch failed:", errorMsg, err);
+            }
+        };
+        loadData();
     }, [fetchCandidatesAndResults]);
 
     const submitVote = async () => {
@@ -55,15 +73,15 @@ export default function UserView({ currentUser }: UserViewProps) {
         setError('');
         setMessage('');
         try {
-            await api.vote(selectedCandidate, VOTE_STAGE);
+            await api.vote(Number(selectedCandidate), currentStage);
             setMessage('Vote submitted successfully!');
-            setSelectedCandidate(null); // Reset selection
-            // Re-fetch results after voting to show update
-            await fetchCandidatesAndResults();
+            setSelectedCandidate(null);
+            setVotesRemaining(prev => prev - 1);
+            await fetchCandidatesAndResults(currentStage);
         } catch (err: any) {
             let errorMsg = 'Failed to submit vote.';
-            if (err.response?.data?.detail === "Already voted in this stage") {
-                errorMsg = "You have already voted in this stage.";
+            if (err.response?.data?.detail === "You have already cast all your votes for this stage") {
+                errorMsg = "You have already cast all your votes for this stage.";
             } else if (err.response?.data?.detail) {
                 errorMsg = err.response.data.detail;
             }
@@ -75,16 +93,26 @@ export default function UserView({ currentUser }: UserViewProps) {
     return (
         <div className="space-y-8 max-w-4xl mx-auto">
             <h2 className="text-3xl font-bold text-center">Welcome, {currentUser.username}!</h2>
+            <h3 className="text-xl text-center">Current Stage: {currentStage}</h3>
+            <p className="text-center">Votes remaining in this stage: {votesRemaining}</p>
 
             {/* Display messages/errors */}
             {message && <p className="text-green-600 p-3 bg-green-100 border border-green-300 rounded text-center">{message}</p>}
-            {error && <p className="text-red-600 p-3 bg-red-100 border border-red-300 rounded text-center">Error: {error}</p>}
+            {error && (
+                <p className="text-red-600 p-3 bg-red-100 border border-red-300 rounded text-center">
+                    {Array.isArray(error)
+                        ? error.map((e: any, idx: number) => <span key={idx}>{e.msg}</span>)
+                        : error}
+                </p>
+            )}
 
             {/* Voting Section */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Vote - Stage {VOTE_STAGE}</CardTitle>
-                    <p className="text-sm text-muted-foreground pt-1">Select a candidate below and click 'Submit Vote'.</p>
+                    <CardTitle>Vote - Stage {currentStage}</CardTitle>
+                    <p className="text-sm text-muted-foreground pt-1">
+                        Select a candidate below and click 'Submit Vote'. You have {votesRemaining} votes remaining in this stage.
+                    </p>
                 </CardHeader>
                 <CardContent>
                     {candidates.length === 0 && !error && <p>Loading candidates...</p>}
@@ -103,7 +131,7 @@ export default function UserView({ currentUser }: UserViewProps) {
                     </div>
                     <Button
                         onClick={submitVote}
-                        disabled={selectedCandidate === null}
+                        disabled={selectedCandidate === null || votesRemaining <= 0}
                         className="w-full sm:w-auto"
                     >
                         Submit Vote
@@ -114,7 +142,7 @@ export default function UserView({ currentUser }: UserViewProps) {
             {/* Results Section */}
             <Card>
                 <CardHeader>
-                    <CardTitle>Results - Stage {VOTE_STAGE}</CardTitle>
+                    <CardTitle>Results - Stage {currentStage}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     {results === null && !error && <p>Loading results...</p>}
@@ -133,4 +161,4 @@ export default function UserView({ currentUser }: UserViewProps) {
             </Card>
         </div>
     );
-} 
+}

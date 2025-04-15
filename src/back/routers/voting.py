@@ -2,9 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 from sqlalchemy.orm import Session
 from ..database.database import SessionLocal, get_db
-from ..models.models import User, Candidate, Vote
+from ..models.models import User, Candidate, Vote, VotingSession
 from ..schemas.schemas import CandidateOut
 from ..auth.auth import get_current_user
+from sqlalchemy import func
 
 router = APIRouter()
 
@@ -14,14 +15,59 @@ def list_candidates(db: Session = Depends(get_db)):
 
 @router.post("/vote/{candidate_id}/{stage}")
 def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    if stage not in [1, 2]:
+    # Get current active session
+    current_session = db.query(VotingSession).filter_by(active=True).first()
+    if not current_session:
+        raise HTTPException(status_code=400, detail="No active voting session")
+    
+    if stage not in [1, 2, 3]:
         raise HTTPException(status_code=400, detail="Invalid stage")
-    existing_vote = db.query(Vote).filter_by(user_id=current_user.id, stage=stage).first()
-    if existing_vote:
-        raise HTTPException(status_code=400, detail="Already voted in this stage")
-    vote = Vote(user_id=current_user.id, candidate_id=candidate_id, stage=stage)
+    
+    # Check if user has already voted 3 times in this stage
+    vote_count = db.query(Vote).filter_by(
+        user_id=current_user.id,
+        stage=stage,
+        session_id=current_session.id
+    ).count()
+    
+    if vote_count >= 3:
+        raise HTTPException(status_code=400, detail="You have already cast all your votes for this stage")
+    
+    # Check if candidate exists
+    candidate = db.query(Candidate).filter_by(id=candidate_id).first()
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+    
+    # Record the vote
+    vote = Vote(
+        user_id=current_user.id,
+        candidate_id=candidate_id,
+        stage=stage,
+        session_id=current_session.id
+    )
     db.add(vote)
     db.commit()
+    
+    # Check if all users have completed voting for this stage
+    total_users = db.query(User).count()
+    users_voted = db.query(Vote.user_id).filter_by(
+        stage=stage,
+        session_id=current_session.id
+    ).distinct().count()
+    
+    if users_voted == total_users and vote_count == 2:  # Last vote for this user
+        # Check if all users have cast all their votes
+        total_votes = db.query(Vote).filter_by(
+            stage=stage,
+            session_id=current_session.id
+        ).count()
+        
+        if total_votes == total_users * 3:  # All users have cast all their votes
+            # Move to next stage
+            current_session.stage = stage + 1
+            db.commit()
+            return {"message": "Vote recorded. All users have completed voting for this stage. Moving to next stage."}
+    
     return {"message": "Vote recorded"}
 
 @router.get("/results/{stage}")
