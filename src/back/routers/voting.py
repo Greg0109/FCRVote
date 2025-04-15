@@ -49,7 +49,7 @@ def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current
     db.commit()
     
     # Check if all users have completed voting for this stage
-    total_users = db.query(User).count()
+    total_users = db.query(User).filter_by(is_admin=False).count()
     users_voted = db.query(Vote.user_id).filter_by(
         stage=stage,
         session_id=current_session.id

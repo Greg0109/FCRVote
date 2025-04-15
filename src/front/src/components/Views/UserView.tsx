@@ -151,7 +151,7 @@ export default function UserView({ currentUser }: UserViewProps) {
                         <ul className="space-y-3">
                             {results.sort((a, b) => b.votes - a.votes).map((result) => (
                                 <li key={result.candidate_id} className="flex justify-between items-center p-3 bg-gray-50 border rounded-md">
-                                    <span className="font-medium">{result.candidate_name}</span>
+                                    <span className="font-medium">{result.candidate_name}:  </span>
                                     <span className="font-semibold text-indigo-600">{result.votes} vote(s)</span>
                                 </li>
                             ))}
