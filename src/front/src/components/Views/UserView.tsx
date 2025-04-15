@@ -16,6 +16,8 @@ export default function UserView({ currentUser }: UserViewProps) {
   const [currentStage, setCurrentStage] = useState(1);
   const [votesRemaining, setVotesRemaining] = useState(3);
   const [title, setTitle] = useState(``);
+  const [isPolling, setIsPolling] = useState(false);
+  const [waitingMessage, setWaitingMessage] = useState('');
 
   const fetchCandidatesAndResults = useCallback(async (stage: number) => {
     setError('');
@@ -45,6 +47,22 @@ export default function UserView({ currentUser }: UserViewProps) {
     }
   }, [currentUser.id]);
 
+  const checkVotingStatus = useCallback(async () => {
+    try {
+      const sessionRes = await api.getCurrentVotingSession();
+      const newStage = Number(sessionRes.data.stage);
+      
+      if (newStage !== currentStage) {
+        setCurrentStage(newStage);
+        await fetchCandidatesAndResults(newStage);
+        setIsPolling(false);
+        setWaitingMessage('');
+      }
+    } catch (err: any) {
+      console.error("Failed to check voting status:", err);
+    }
+  }, [currentStage, fetchCandidatesAndResults]);
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -70,8 +88,23 @@ export default function UserView({ currentUser }: UserViewProps) {
       setTitle(`Round ${currentStage}. Choose the 3rd Winner (1 point).`);
     } else if (votesRemaining === 0) {
       setTitle(`Round ${currentStage}. Voting Completed!`);
+      setWaitingMessage('Waiting for other users to finish voting...');
     }
   }, [votesRemaining, currentStage]);
+
+  useEffect(() => {
+    let pollInterval: NodeJS.Timeout;
+    
+    if (isPolling) {
+      pollInterval = setInterval(checkVotingStatus, 3000); // Check every 3 seconds
+    }
+    
+    return () => {
+      if (pollInterval) {
+        clearInterval(pollInterval);
+      }
+    };
+  }, [isPolling, checkVotingStatus]);
 
   const submitVote = async () => {
     if (selectedCandidate === null) {
@@ -87,6 +120,7 @@ export default function UserView({ currentUser }: UserViewProps) {
       const newVotesRemaining = votesRemaining - 1;
       setVotesRemaining(newVotesRemaining);
       await fetchCandidatesAndResults(currentStage);
+      setIsPolling(true);
     } catch (err: any) {
       let errorMsg = 'Failed to submit vote.';
       if (err.response?.data?.detail === "You have already cast all your votes for this stage") {
@@ -104,6 +138,12 @@ export default function UserView({ currentUser }: UserViewProps) {
       <div className="mobile-round-title">
         {title}
       </div>
+
+      {waitingMessage && (
+        <div className="mobile-waiting">
+          {waitingMessage}
+        </div>
+      )}
 
       {candidates.length === 0 && !error && (
         <p className="mobile-loading">Loading candidates...</p>

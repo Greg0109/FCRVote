@@ -69,6 +69,10 @@ def delete_session(session_id: int, db: Session = Depends(get_db)):
     if not session:
         raise HTTPException(status_code=404, detail="Session not found")
 
+    votes = db.query(Vote).filter_by(session_id=session.id).count()
+    if votes > 0:
+        db.query(Vote).filter_by(session_id=session.id).delete()
+
     db.delete(session)
     db.commit()
     return {"message": "Voting session deleted successfully"}
