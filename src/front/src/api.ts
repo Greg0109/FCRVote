@@ -44,5 +44,6 @@ export const deleteVotingSession = (sessionId: number) => apiClient.delete(`/vot
 export const fetchCandidates = (stage: number) => apiClient.get<Candidate[]>(`/voting/candidates/${stage}`);
 export const vote = (candidateId: number, stage: number) => apiClient.post<{ message: string }>(`/voting/vote/${candidateId}/${stage}`);
 export const fetchResults = (stage: number) => apiClient.get<Result[]>(`/voting/results/${stage}`);
+export const fetchWinner = () => apiClient.get<Candidate & { points: number }>(`/voting/winner`);
 
 export default apiClient; 

@@ -14,21 +14,21 @@ router = APIRouter()
 def list_candidates(stage: int = 1, db: Session = Depends(get_db)):
     if stage == 1:
         return db.query(Candidate).all()
-    
+
     # For stages 2 and 3, get only the top candidates from previous stage
     current_session = db.query(VotingSession).filter_by(active=True).first()
     if not current_session:
         raise HTTPException(status_code=400, detail="No active voting session")
-    
+
     # Get results from previous stage
     prev_stage = stage - 1
     results = defaultdict(int)
     for v in db.query(Vote).filter_by(stage=prev_stage, session_id=current_session.id).all():
         results[v.candidate_id] += v.points
-    
+
     # Sort by points and get top candidates
     sorted_results = sorted(results.items(), key=lambda x: x[1], reverse=True)
-    
+
     # Get top 2 candidates, or 3 if there's a tie for second place
     top_candidates = []
     if len(sorted_results) >= 2:
@@ -43,7 +43,7 @@ def list_candidates(stage: int = 1, db: Session = Depends(get_db)):
                     break
         else:
             top_candidates.append(sorted_results[1][0])  # Second place
-    
+
     return db.query(Candidate).filter(Candidate.id.in_(top_candidates)).all()
 
 @router.post("/vote/{candidate_id}/{stage}")
@@ -52,30 +52,30 @@ def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current
     current_session = db.query(VotingSession).filter_by(active=True).first()
     if not current_session:
         raise HTTPException(status_code=400, detail="No active voting session")
-    
+
     if stage not in [1, 2, 3]:
         raise HTTPException(status_code=400, detail="Invalid stage")
-    
+
     # Check if user has already voted 3 times in this stage
     vote_count = db.query(Vote).filter_by(
         user_id=current_user.id,
         stage=stage,
         session_id=current_session.id
     ).count()
-    
+
     if vote_count >= 3 and stage == 1:
         raise HTTPException(status_code=400, detail="You have already cast all your votes for this stage")
     elif vote_count >= 1 and stage > 1:
         raise HTTPException(status_code=400, detail="You have already cast all your votes for this stage")
-    
+
     # Check if candidate exists
     candidate = db.query(Candidate).filter_by(id=candidate_id).first()
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
-    
+
     # Calculate points based on vote order (3, 2, 1)
     points = 3 - vote_count if stage == 1 else 1
-    
+
     # Record the vote
     vote = Vote(
         user_id=current_user.id,
@@ -86,14 +86,14 @@ def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current
     )
     db.add(vote)
     db.commit()
-    
+
     # Check if all users have completed voting for this stage
     total_users = db.query(User).filter_by(is_admin=False).count()
     users_voted = db.query(Vote.user_id).filter_by(
         stage=stage,
         session_id=current_session.id
     ).distinct().count()
-    
+
     if (users_voted == total_users and ((stage == 1 and vote_count == 2) or (stage > 1 and vote_count == 0))):  # Último voto para este usuario
         # Verificar si todos los usuarios han emitido todos sus votos
         total_votes = db.query(Vote).filter_by(
@@ -117,6 +117,61 @@ def results(stage: int, db: Session = Depends(get_db)):
         results[v.candidate_id] += v.points
     sorted_results = sorted(results.items(), key=lambda x: x[1], reverse=True)
     return [{"candidate_id": cid, "points": count} for cid, count in sorted_results]
+
+@router.get("/winner")
+def get_winner(db: Session = Depends(get_db)):
+    """
+    Calculate and return the final winner based on all stages of voting.
+    If there was a tie in stage 2, the president's vote in stage 3 determines the winner.
+    """
+    current_session = db.query(VotingSession).filter_by(active=True).first()
+    if not current_session:
+        raise HTTPException(status_code=400, detail="No active voting session")
+
+    # Check if we're in stage 3 or beyond
+    if current_session.stage < 3:
+        raise HTTPException(status_code=400, detail="Voting is not complete yet")
+
+    # Check if there was a tie in stage 2
+    stage2_results = defaultdict(int)
+    for v in db.query(Vote).filter_by(stage=2, session_id=current_session.id).all():
+        stage2_results[v.candidate_id] += v.points
+
+    sorted_stage2 = sorted(stage2_results.items(), key=lambda x: x[1], reverse=True)
+
+    # If there are less than 2 candidates with votes, return the one with votes or an error
+    if len(sorted_stage2) == 0:
+        raise HTTPException(status_code=404, detail="No votes recorded in stage 2")
+    elif len(sorted_stage2) == 1:
+        winner_id = sorted_stage2[0][0]
+    else:
+        # Check if there was a tie between first and second place
+        is_tie = sorted_stage2[0][1] == sorted_stage2[1][1]
+
+        if is_tie:
+            # If there was a tie, check stage 3 for the president's tie-breaking vote
+            stage3_votes = db.query(Vote).filter_by(stage=3, session_id=current_session.id).all()
+            if not stage3_votes:
+                raise HTTPException(status_code=400, detail="Tie detected but no tie-breaker vote found")
+
+            # The president's vote determines the winner
+            winner_id = stage3_votes[0].candidate_id
+        else:
+            # If no tie, the winner is the candidate with the most points in stage 2
+            winner_id = sorted_stage2[0][0]
+
+    # Get the winner's details
+    winner = db.query(Candidate).filter_by(id=winner_id).first()
+    if not winner:
+        raise HTTPException(status_code=404, detail="Winner candidate not found")
+
+    return {
+        "candidate_id": winner.id,
+        "name": winner.name,
+        "photo": winner.photo,
+        "description": winner.description,
+        "points": stage2_results[winner.id]
+    }
 
 @router.post("/resolve_tie/{stage}")
 def resolve_tie(stage: int, winner_id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):

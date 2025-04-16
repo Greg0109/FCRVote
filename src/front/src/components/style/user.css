@@ -102,3 +102,74 @@
     opacity: 1;
   }
 }
+
+/* Winner styles */
+.mobile-winner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mobile-winner-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #007aff;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.mobile-winner-card {
+  background-color: #fff;
+  border: 2px solid #007aff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 100%;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 122, 255, 0.2);
+}
+
+.mobile-winner-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.mobile-winner-points {
+  font-size: 18px;
+  font-weight: 600;
+  color: #007aff;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.mobile-winner-description {
+  font-size: 16px;
+  color: #555;
+  text-align: center;
+}
+
+.mobile-winner-message {
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+  margin-top: 10px;
+}

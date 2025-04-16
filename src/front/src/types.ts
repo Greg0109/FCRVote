@@ -20,6 +20,7 @@ export interface Result {
     candidate_name: string;
     votes: number;
     user_id: number;
+    points: number;
 }
 
 export type TokenResponse = {
