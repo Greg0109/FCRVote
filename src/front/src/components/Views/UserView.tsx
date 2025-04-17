@@ -207,7 +207,7 @@ export default function UserView({ currentUser }: UserViewProps) {
               }`}
               onClick={() => setSelectedCandidate(candidate.id)}
             >
-              <div style={{display: 'flex', alignItems: 'center'}}>
+              <div className="mobile-candidate-content">
                 <div className="mobile-candidate-photo">
                   <img
                       src={candidate.photo}
@@ -215,7 +215,7 @@ export default function UserView({ currentUser }: UserViewProps) {
                       className="mobile-candidate-photo-img"
                   />
                 </div>
-                <div style={{marginLeft: '12px'}}>
+                <div>
                   <div className="mobile-candidate-name">
                     {candidate.name}
                   </div>
