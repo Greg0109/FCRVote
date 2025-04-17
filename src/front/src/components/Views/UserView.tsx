@@ -200,29 +200,40 @@ export default function UserView({ currentUser }: UserViewProps) {
         <>
           <div className="mobile-candidate-list">
             {candidates.map(candidate => (
-              <div
-                key={candidate.id}
-                className={`mobile-candidate-card ${
-                  selectedCandidate === candidate.id ? 'selected' : ''
-                }`}
-                onClick={() => setSelectedCandidate(candidate.id)}
-              >
-                <div className="mobile-candidate-name">
-                  {candidate.name}
+            <div
+              key={candidate.id}
+              className={`mobile-candidate-card ${
+                selectedCandidate === candidate.id ? 'selected' : ''
+              }`}
+              onClick={() => setSelectedCandidate(candidate.id)}
+            >
+              <div style={{display: 'flex', alignItems: 'center'}}>
+                <div className="mobile-candidate-photo">
+                  <img
+                      src={candidate.photo}
+                      alt={`${candidate.name}'s photo`}
+                      className="mobile-candidate-photo-img"
+                  />
                 </div>
-                <div className="mobile-candidate-description">
-                  Description or tagline here
+                <div style={{marginLeft: '12px'}}>
+                  <div className="mobile-candidate-name">
+                    {candidate.name}
+                  </div>
+                  <div className="mobile-candidate-description">
+                    {candidate.description}
+                  </div>
                 </div>
               </div>
+            </div>
             ))}
           </div>
 
           <button
-            className="mobile-continue-button"
-            onClick={submitVote}
-            disabled={selectedCandidate === null || votesRemaining <= 0}
+              className="mobile-continue-button"
+              onClick={submitVote}
+              disabled={selectedCandidate === null || votesRemaining <= 0}
           >
-            Continue
+          Continue
           </button>
         </>
       )}

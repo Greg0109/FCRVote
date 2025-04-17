@@ -253,15 +253,15 @@ def get_voting_status(current_user: User = Depends(get_current_user), db: Sessio
         if votes_remaining == 3:
             title = f"Round {current_stage}. Choose the 1st Winner (3 points) 🏆"
         elif votes_remaining == 2:
-            title = f"Round {current_stage}. Choose the 2nd Winner (2 points)."
+            title = f"Round {current_stage}. Choose the 2nd Winner (2 points) 🥈"
         elif votes_remaining == 1:
-            title = f"Round {current_stage}. Choose the 3rd Winner (1 point)."
+            title = f"Round {current_stage}. Choose the 3rd Winner (1 point) 🥉"
         elif votes_remaining == 0:
             title = f"Round {current_stage}. Voting Completed!"
             waiting_message = "Waiting for other users to finish voting..."
     elif current_stage == 2:
         if votes_remaining == 1:
-            title = f"Round {current_stage}. Choose the Winner (1 point)."
+            title = f"Round {current_stage}. Choose the Winner (1 point) 🏆"
         elif votes_remaining == 0:
             title = f"Round {current_stage}. Voting Completed!"
             waiting_message = "Waiting for other users to finish voting..."
