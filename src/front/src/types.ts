@@ -5,6 +5,7 @@ export type Candidate = {
   name: string;
   photo: string;
   description: string;
+  points?: number;
 };
 
 export type User = {

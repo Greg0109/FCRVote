@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import * as api from '../../api';
-import { Candidate, Result, User } from '../../types';
+import { Candidate, User } from '../../types';
 import '../style/user.css';
 
 interface UserViewProps {
@@ -18,7 +18,7 @@ export default function UserView({ currentUser }: UserViewProps) {
   const [isPolling, setIsPolling] = useState(false);
   const [waitingMessage, setWaitingMessage] = useState('');
   const [isTie, setIsTie] = useState(false);
-  const [winner, setWinner] = useState<(Candidate & { points: number }) | null>(null);
+  const [winner, setWinner] = useState<Candidate>();
 
   const fetchCandidates = useCallback(async (stage: number) => {
     setError('');
@@ -173,14 +173,22 @@ export default function UserView({ currentUser }: UserViewProps) {
         <div className="mobile-winner-container">
           <h2 className="mobile-winner-title">🏆 Winner Announced! 🏆</h2>
           <div className="mobile-winner-card">
+            <div className="mobile-winner-photo">
+              <img
+                src={winner.photo}
+                alt={`${winner.name}'s photo`}
+                className="mobile-winner-photo-img"
+              />
+            </div>
             <div className="mobile-winner-name">
               {winner.name}
             </div>
-            <div className="mobile-winner-points">
-              Total Points: {winner.points}
-            </div>
             <div className="mobile-winner-description">
               {winner.description}
+            </div>
+            <br/>
+            <div className="mobile-winner-points">
+              Total Points: {winner.points}
             </div>
           </div>
           <div className="mobile-winner-message">
