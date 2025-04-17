@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List
+from typing import List, Optional
 from sqlalchemy.orm import Session
 from ..database.database import SessionLocal, get_db
 from ..models.models import User, Candidate, Vote, VotingSession
-from ..schemas.schemas import CandidateOut
+from ..schemas.schemas import CandidateOut, VotingStatusOut
 from ..auth.auth import get_current_user
 from sqlalchemy import func
 from collections import defaultdict
@@ -186,3 +186,99 @@ def resolve_tie(stage: int, winner_id: int, current_user: User = Depends(get_cur
     db.add(Vote(user_id=current_user.id, candidate_id=winner_id, stage=stage))
     db.commit()
     return {"message": "Tie resolved by president"} 
+
+@router.get("/voting_status", response_model=VotingStatusOut)
+def get_voting_status(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """
+    Get the current voting status for the user, including title, votes remaining, and tie status.
+    """
+    # Get current active session
+    current_session = db.query(VotingSession).filter_by(active=True).first()
+    if not current_session:
+        raise HTTPException(status_code=400, detail="No active voting session")
+
+    current_stage = current_session.stage
+
+    # Calculate votes remaining for the user
+    vote_count = db.query(Vote).filter_by(
+        user_id=current_user.id,
+        stage=current_stage,
+        session_id=current_session.id
+    ).count()
+
+    # Calculate votes remaining based on stage
+    if current_stage == 1:
+        votes_remaining = 3 - vote_count
+    else:
+        votes_remaining = 1 - vote_count
+
+    # Check for tie in stage 2 if we're in stage 3
+    is_tie = False
+    if current_stage == 3:
+        # Get results from stage 2
+        stage2_results = defaultdict(int)
+        for v in db.query(Vote).filter_by(stage=2, session_id=current_session.id).all():
+            stage2_results[v.candidate_id] += v.points
+
+        sorted_stage2 = sorted(stage2_results.items(), key=lambda x: x[1], reverse=True)
+
+        # Check if there's a tie between first and second place
+        if len(sorted_stage2) >= 2:
+            is_tie = sorted_stage2[0][1] == sorted_stage2[1][1]
+
+    # Try to get winner if we're in stage 3
+    winner = None
+    if current_stage == 3:
+        try:
+            winner_data = get_winner(db=db)
+            winner = winner_data
+        except HTTPException:
+            # No winner yet
+            pass
+
+    # Generate title and waiting message based on stage, votes remaining, and tie status
+    title = ""
+    waiting_message = ""
+
+    # If we have a winner, set appropriate title and clear waiting message
+    if winner:
+        title = "Voting Completed! Winner Announced"
+        waiting_message = ""
+    elif current_stage == 1:
+        if votes_remaining == 3:
+            title = f"Round {current_stage}. Choose the 1st Winner (3 points) 🏆"
+        elif votes_remaining == 2:
+            title = f"Round {current_stage}. Choose the 2nd Winner (2 points)."
+        elif votes_remaining == 1:
+            title = f"Round {current_stage}. Choose the 3rd Winner (1 point)."
+        elif votes_remaining == 0:
+            title = f"Round {current_stage}. Voting Completed!"
+            waiting_message = "Waiting for other users to finish voting..."
+    elif current_stage == 2:
+        if votes_remaining == 1:
+            title = f"Round {current_stage}. Choose the Winner (1 point)."
+        elif votes_remaining == 0:
+            title = f"Round {current_stage}. Voting Completed!"
+            waiting_message = "Waiting for other users to finish voting..."
+    elif current_stage == 3:
+        if is_tie:
+            if current_user.is_president:
+                if votes_remaining == 1:
+                    title = f"Round {current_stage}. President Tie-Breaker (1 point)."
+                elif votes_remaining == 0:
+                    title = f"Round {current_stage}. Voting Completed!"
+                    waiting_message = "Waiting for results to be processed..."
+            else:
+                title = f"Round {current_stage}. Waiting for President to break the tie."
+                waiting_message = "The president will cast the deciding vote."
+        else:
+            title = f"Round {current_stage}. Calculating final results..."
+            waiting_message = "The final results are being calculated."
+
+    return {
+        "title": title,
+        "votes_remaining": votes_remaining,
+        "is_tie": is_tie,
+        "waiting_message": waiting_message,
+        "winner": winner
+    }

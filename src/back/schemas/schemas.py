@@ -63,3 +63,13 @@ class UserVotesOut(BaseModel):
 
     class Config:
         orm_mode = True
+
+class VotingStatusOut(BaseModel):
+    title: str
+    votes_remaining: int
+    is_tie: bool
+    waiting_message: Optional[str] = None
+    winner: Optional[dict] = None
+
+    class Config:
+        orm_mode = True

@@ -45,5 +45,12 @@ export const fetchCandidates = (stage: number) => apiClient.get<Candidate[]>(`/v
 export const vote = (candidateId: number, stage: number) => apiClient.post<{ message: string }>(`/voting/vote/${candidateId}/${stage}`);
 export const fetchResults = (stage: number) => apiClient.get<Result[]>(`/voting/results/${stage}`);
 export const fetchWinner = () => apiClient.get<Candidate & { points: number }>(`/voting/winner`);
+export const fetchVotingStatus = () => apiClient.get<{
+  title: string;
+  votes_remaining: number;
+  is_tie: boolean;
+  waiting_message: string | null;
+  winner: (Candidate & { points: number }) | null;
+}>(`/voting/voting_status`);
 
 export default apiClient; 

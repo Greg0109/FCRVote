@@ -36,63 +36,54 @@ export default function UserView({ currentUser }: UserViewProps) {
     }
   }, [currentUser.id]);
 
-  const checkForTie = useCallback(async (stage: number) => {
-    if (stage === 3) {
-      try {
-        const resultsRes = await api.fetchResults(2); // Check results from stage 2
-        const results = resultsRes.data;
-
-        if (results.length >= 2) {
-          // Check if there's a tie between first and second place
-          const isTieBetweenFirstAndSecond = results[0].points === results[1].points;
-          setIsTie(isTieBetweenFirstAndSecond);
-        } else {
-          setIsTie(false);
-        }
-      } catch (err: any) {
-        console.error("Failed to check for tie:", err);
-        setIsTie(false);
-      }
-    } else {
-      setIsTie(false);
-    }
-  }, []);
-
-  const fetchWinner = useCallback(async () => {
+  const fetchVotingStatus = useCallback(async () => {
     setError('');
     try {
-      const winnerRes = await api.fetchWinner();
-      setWinner(winnerRes.data);
-    } catch (err: any) {
-      const errorMsg = err.response?.data?.detail || 'Failed to load winner.';
-      setError(errorMsg);
-      console.error("Winner fetch failed:", errorMsg, err);
-    }
-  }, []);
-
-  const checkVotingStatus = useCallback(async () => {
-    try {
+      // First get the current session to check the stage
       const sessionRes = await api.getCurrentVotingSession();
       const newStage = Number(sessionRes.data.stage);
 
+      // Update stage if changed
       if (newStage !== currentStage) {
-        setVotesRemaining(1);
         setCurrentStage(newStage);
-        await fetchCandidates(newStage);
-        await checkForTie(newStage);
-        setIsPolling(false);
-        setWaitingMessage('');
       }
 
-      // If we're in stage 3 and there's no tie or the president has voted (votesRemaining === 0),
-      // fetch the winner
-      if (newStage === 3 && (!isTie || (isTie && currentUser.is_president && votesRemaining === 0))) {
-        await fetchWinner();
+      const statusRes = await api.fetchVotingStatus();
+      const status = statusRes.data;
+
+      setTitle(status.title);
+      setVotesRemaining(status.votes_remaining);
+      setIsTie(status.is_tie);
+      setWaitingMessage(status.waiting_message || '');
+      await fetchCandidates(currentStage);
+
+      if (!!status.waiting_message) {
+        setIsPolling(true);
+      } else {
+        setIsPolling(false);
       }
+
+      if (status.winner) {
+        setWinner(status.winner);
+        setIsPolling(false);
+      }
+
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.detail || 'Failed to load voting status.';
+      setError(errorMsg);
+      console.error("Fetch voting status failed:", errorMsg, err);
+    }
+  }, [currentStage, fetchCandidates]);
+
+
+  const pollVotingStatus = useCallback(async () => {
+    try {
+      await fetchVotingStatus();
+
     } catch (err: any) {
       console.error("Failed to check voting status:", err);
     }
-  }, [currentStage, fetchCandidates, checkForTie, isTie, currentUser.is_president, votesRemaining, fetchWinner]);
+  }, [currentStage, fetchCandidates, fetchVotingStatus]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -101,12 +92,7 @@ export default function UserView({ currentUser }: UserViewProps) {
         const stage = Number(sessionRes.data.stage);
         setCurrentStage(stage);
         await fetchCandidates(stage);
-        await checkForTie(stage);
-
-        // If we're in stage 3, try to fetch the winner
-        if (stage === 3) {
-          await fetchWinner();
-        }
+        await fetchVotingStatus();
       } catch (err: any) {
         const errorMsg = err.response?.data?.detail || 'Failed to load session.';
         setError(errorMsg);
@@ -114,63 +100,14 @@ export default function UserView({ currentUser }: UserViewProps) {
       }
     };
     loadData();
-  }, [fetchCandidates, checkForTie, fetchWinner]);
+  }, [fetchCandidates, fetchVotingStatus]);
 
-  useEffect(() => {
-    // If we have a winner, set appropriate title and clear waiting message
-    if (winner) {
-      setTitle(`Voting Completed! Winner Announced`);
-      setWaitingMessage('');
-      setIsPolling(false);
-      return;
-    }
-
-    if (currentStage === 1) {
-      if (votesRemaining === 3) {
-        setTitle(`Round ${currentStage}. Choose the 1st Winner (3 points) 🏆`);
-      } else if (votesRemaining === 2) {
-        setTitle(`Round ${currentStage}. Choose the 2nd Winner (2 points).`);
-      } else if (votesRemaining === 1) {
-        setTitle(`Round ${currentStage}. Choose the 3rd Winner (1 point).`);
-      } else if (votesRemaining === 0) {
-        setTitle(`Round ${currentStage}. Voting Completed!`);
-        setIsPolling(true);
-        setWaitingMessage('Waiting for other users to finish voting...');
-      }
-    } else if (currentStage === 2) {
-      if (votesRemaining === 1) {
-        setTitle(`Round ${currentStage}. Choose the Winner (1 point).`);
-      } else if (votesRemaining === 0) {
-        setTitle(`Round ${currentStage}. Voting Completed!`);
-        setIsPolling(true);
-        setWaitingMessage('Waiting for other users to finish voting...');
-      }
-    } else if (currentStage === 3) {
-      if (isTie) {
-        if (currentUser.is_president) {
-          if (votesRemaining === 1) {
-            setTitle(`Round ${currentStage}. President Tie-Breaker (1 point).`);
-          } else if (votesRemaining === 0) {
-            setTitle(`Round ${currentStage}. Voting Completed!`);
-            setIsPolling(true);
-            setWaitingMessage('Waiting for results to be processed...');
-          }
-        } else {
-          setTitle(`Round ${currentStage}. Waiting for President to break the tie.`);
-          setWaitingMessage('The president will cast the deciding vote.');
-        }
-      } else {
-        setTitle(`Round ${currentStage}. Calculating final results...`);
-        setWaitingMessage('The final results are being calculated.');
-      }
-    }
-  }, [votesRemaining, currentStage, isTie, currentUser.is_president, winner]);
 
   useEffect(() => {
     let pollInterval: NodeJS.Timeout;
 
     if (isPolling) {
-      pollInterval = setInterval(checkVotingStatus, 3000); // Check every 3 seconds
+      pollInterval = setInterval(pollVotingStatus, 1000); // Check every 3 seconds
     }
 
     return () => {
@@ -178,7 +115,7 @@ export default function UserView({ currentUser }: UserViewProps) {
         clearInterval(pollInterval);
       }
     };
-  }, [isPolling, checkVotingStatus]);
+  }, [isPolling, pollVotingStatus]);
 
   const submitVote = async () => {
     if (selectedCandidate === null) {
@@ -204,9 +141,9 @@ export default function UserView({ currentUser }: UserViewProps) {
       await api.vote(Number(selectedCandidate), currentStage);
       setMessage('Vote submitted successfully!');
       setSelectedCandidate(null);
-      const newVotesRemaining = votesRemaining - 1;
-      setVotesRemaining(newVotesRemaining);
-      await fetchCandidates(currentStage);
+
+      // Fetch candidates and voting status to update the UI
+      await fetchVotingStatus();
     } catch (err: any) {
       let errorMsg = 'Failed to submit vote.';
       if (err.response?.data?.detail === "You have already cast all your votes for this stage") {
