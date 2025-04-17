@@ -165,12 +165,17 @@ def get_winner(db: Session = Depends(get_db)):
     if not winner:
         raise HTTPException(status_code=404, detail="Winner candidate not found")
 
+    # sum all the points the winner got in all the stages
+    total_points = 0
+    for v in db.query(Vote).filter_by(candidate_id=winner_id, session_id=current_session.id).all():
+        total_points += v.points
+
     return {
         "candidate_id": winner.id,
         "name": winner.name,
         "photo": winner.photo,
         "description": winner.description,
-        "points": stage2_results[winner.id]
+        "points": total_points
     }
 
 @router.post("/resolve_tie/{stage}")
