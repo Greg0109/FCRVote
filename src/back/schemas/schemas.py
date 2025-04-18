@@ -39,4 +39,37 @@ class UserOut(BaseModel):
     is_admin: bool
 
     class Config:
-        orm_mode = True 
+        orm_mode = True
+
+class SessionCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    active: Optional[bool] = True
+
+class SessionOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str] = None
+    active: bool
+
+    class Config:
+        orm_mode = True
+
+class UserVotesOut(BaseModel):
+    user_id: int
+    session_id: int
+    stage: int
+    votes: int
+
+    class Config:
+        orm_mode = True
+
+class VotingStatusOut(BaseModel):
+    title: str
+    votes_remaining: int
+    is_tie: bool
+    waiting_message: Optional[str] = None
+    winner: Optional[dict] = None
+
+    class Config:
+        orm_mode = True
