@@ -10,6 +10,7 @@ ROOT_DIR=$(shell pwd)
 
 help:
 	@echo "Available commands:"
+	@echo "  make clean        - Remove all build artifacts"
 	@echo "  make venv         - Create virtual environment"
 	@echo "  make install      - Install dependencies"
 	@echo "  make run          - Start FastAPI server with reload"
@@ -17,6 +18,16 @@ help:
 	@echo "  make reset-db     - Delete and recreate the SQLite DB"
 	@echo "  make build-front  - Build the frontend"
 	@echo "  make run-app      - Build frontend and run backend"
+
+clean:
+	-rm -r $(VENV)
+	-rm -r src/front/node_modules
+	-rm -r src/front/build
+	-rm -r build
+	-rm -r dist
+	-rm -r *.egg-info
+	-rm -r node_modules
+	-rm -r voting.db
 
 venv:
 	$(UV) venv .venv
