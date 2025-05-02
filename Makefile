@@ -33,13 +33,13 @@ venv:
 	$(UV) venv .venv
 
 front:
-	cd $(ROOT_DIR)/src/front/ && npm start
+	cd $(ROOT_DIR)/src/front/ && yarn start
 
 back:
 	$(RUN) uvicorn src.back.main:app --host 0.0.0.0 --reload
 
 build-front:
-	cd $(ROOT_DIR)/src/front/ && npm run build
+	cd $(ROOT_DIR)/src/front/ && yarn run build
 
 run-app: build-front
 	$(RUN) uvicorn src.back.main:app --host 0.0.0.0 --reload
