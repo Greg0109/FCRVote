@@ -28,24 +28,24 @@ app.include_router(admin.router, prefix="/admin")
 app.include_router(users.router, prefix="/users")
 app.include_router(voting_sessions.router, prefix="/voting_sessions")
 
-# Get the directory of the current file
-current_dir = os.path.dirname(os.path.abspath(__file__))
-# Navigate to the frontend build directory
-frontend_build_dir = os.path.join(os.path.dirname(os.path.dirname(current_dir)), "src", "front", "build")
+# # Get the directory of the current file
+# current_dir = os.path.dirname(os.path.abspath(__file__))
+# # Navigate to the frontend build directory
+# frontend_build_dir = os.path.join(os.path.dirname(os.path.dirname(current_dir)), "src", "front", "build")
 
 # Mount the static files directory
-app.mount("/static", StaticFiles(directory=os.path.join(frontend_build_dir, "static")), name="static")
-app.mount("/assets", StaticFiles(directory=frontend_build_dir), name="assets")
-
-# Route to serve the index.html for any path not matched by the API routes
-@app.get("/{full_path:path}", include_in_schema=False)
-async def serve_frontend(request: Request, full_path: str):
-    # Exclude API paths
-    if full_path.startswith(("api/", "docs", "redoc", "openapi.json")):
-        return None  # Let FastAPI handle API routes
-
-    # Serve the index.html for all other routes (to support client-side routing)
-    return FileResponse(os.path.join(frontend_build_dir, "index.html"))
+# app.mount("/static", StaticFiles(directory=os.path.join(frontend_build_dir, "static")), name="static")
+# app.mount("/assets", StaticFiles(directory=frontend_build_dir), name="assets")
+#
+# # Route to serve the index.html for any path not matched by the API routes
+# @app.get("/{full_path:path}", include_in_schema=False)
+# async def serve_frontend(request: Request, full_path: str):
+#     # Exclude API paths
+#     if full_path.startswith(("api/", "docs", "redoc", "openapi.json")):
+#         return None  # Let FastAPI handle API routes
+#
+#     # Serve the index.html for all other routes (to support client-side routing)
+#     return FileResponse(os.path.join(frontend_build_dir, "index.html"))
 
 if not next(get_db()).query(User).filter_by(is_admin=True).first():
     user_model = User()

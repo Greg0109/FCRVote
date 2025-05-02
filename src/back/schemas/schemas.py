@@ -28,7 +28,7 @@ class CandidateOut(BaseModel):
     description: Optional[str] = None
     photo: Optional[str] = None
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # Schema for user output (excluding password)
 class UserOut(BaseModel):
@@ -39,7 +39,7 @@ class UserOut(BaseModel):
     is_admin: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class SessionCreate(BaseModel):
     name: str
@@ -53,7 +53,7 @@ class SessionOut(BaseModel):
     active: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class UserVotesOut(BaseModel):
     user_id: int
@@ -62,7 +62,7 @@ class UserVotesOut(BaseModel):
     votes: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class VotingStatusOut(BaseModel):
     title: str
@@ -72,4 +72,22 @@ class VotingStatusOut(BaseModel):
     winner: Optional[dict] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+class StageResult(BaseModel):
+    candidate_id: int
+    points: int
+    name: str
+    photo: Optional[str] = None
+    description: Optional[str] = None
+    total_points: int
+
+    class Config:
+        from_attributes = True
+
+class ResultsOut(BaseModel):
+    current_stage: int
+    results: List[StageResult]
+
+    class Config:
+        from_attributes = True

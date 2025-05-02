@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import * as api from '../../api';
 import { Candidate, User } from '../../types';
 import '../style/user.css';
+import ResultsView from './ResultsView';
 
 interface UserViewProps {
   currentUser: User;
@@ -19,6 +20,7 @@ export default function UserView({ currentUser }: UserViewProps) {
   const [waitingMessage, setWaitingMessage] = useState('');
   const [isTie, setIsTie] = useState(false);
   const [winner, setWinner] = useState<Candidate>();
+  const [showResults, setShowResults] = useState(false);
 
   const fetchCandidates = useCallback(async (stage: number) => {
     setError('');
@@ -46,6 +48,7 @@ export default function UserView({ currentUser }: UserViewProps) {
       // Update stage if changed
       if (newStage !== currentStage) {
         setCurrentStage(newStage);
+        setShowResults(true);
       }
 
       const statusRes = await api.fetchVotingStatus();
@@ -155,6 +158,10 @@ export default function UserView({ currentUser }: UserViewProps) {
       console.error("Vote failed:", errorMsg, err);
     }
   };
+
+  if (showResults) {
+    return <ResultsView currentStage={currentStage-1} setShowResults={setShowResults} />;
+  }
 
   return (
     <div className="mobile-container">

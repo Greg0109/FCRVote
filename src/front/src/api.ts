@@ -51,4 +51,6 @@ export const fetchVotingStatus = () => apiClient.get<{
   winner: Candidate | null;
 }>(`/voting/voting_status`);
 
+export const fetchResults = (stage: number) => apiClient.get<Result>(`/voting/results/${stage}`);
+
 export default apiClient; 

@@ -3,7 +3,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from ..database.database import SessionLocal, get_db
 from ..models.models import User, Candidate, Vote, VotingSession
-from ..schemas.schemas import CandidateOut, VotingStatusOut
+from ..schemas.schemas import CandidateOut, VotingStatusOut, ResultsOut
 from ..auth.auth import get_current_user
 from sqlalchemy import func
 from collections import defaultdict
@@ -109,14 +109,53 @@ def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current
 
     return {"message": "Vote recorded"}
 
-@router.get("/results/{stage}")
+@router.get("/results/{stage}", response_model=ResultsOut)
 def results(stage: int, db: Session = Depends(get_db)):
-    from collections import defaultdict
-    results = defaultdict(int)
-    for v in db.query(Vote).filter_by(stage=stage).all():
-        results[v.candidate_id] += v.points
-    sorted_results = sorted(results.items(), key=lambda x: x[1], reverse=True)
-    return [{"candidate_id": cid, "points": count} for cid, count in sorted_results]
+    # Get current active session
+    current_session = db.query(VotingSession).filter_by(active=True).first()
+    if not current_session:
+        raise HTTPException(status_code=400, detail="No active voting session")
+
+    # Get all candidates
+    candidates = db.query(Candidate).all()
+    candidate_dict = {c.id: c for c in candidates}
+
+    # Calculate points for current stage
+    current_stage_results = defaultdict(int)
+    for v in db.query(Vote).filter_by(stage=stage, session_id=current_session.id).all():
+        current_stage_results[v.candidate_id] += v.points
+
+    # Add candidates with 0 points to the results
+    for candidate in candidates:
+        if candidate.id not in current_stage_results:
+            current_stage_results[candidate.id] = 0
+
+    # Calculate total points across all stages
+    total_points = defaultdict(int)
+    for v in db.query(Vote).filter_by(session_id=current_session.id).all():
+        total_points[v.candidate_id] += v.points
+
+    # Combine results
+    results = []
+    for candidate_id in current_stage_results:
+        candidate = candidate_dict.get(candidate_id)
+        if candidate:
+            results.append({
+                "candidate_id": candidate_id,
+                "points": current_stage_results[candidate_id],
+                "name": candidate.name,
+                "photo": candidate.photo,
+                "description": candidate.description,
+                "total_points": total_points[candidate_id]
+            })
+
+    # Sort by current stage points
+    results.sort(key=lambda x: x["points"], reverse=True)
+
+    return {
+        "current_stage": stage,
+        "results": results
+    }
 
 @router.get("/winner")
 def get_winner(db: Session = Depends(get_db)):
