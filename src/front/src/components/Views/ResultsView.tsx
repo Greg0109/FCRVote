@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import * as api from '../../api';
-import { useNavigate } from 'react-router-dom';
 import '../style/results.css';
 
 interface ResultsViewProps {
