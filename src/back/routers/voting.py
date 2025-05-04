@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
-from typing import List, Optional
+from typing import List
 from sqlalchemy.orm import Session
-from ..database.database import SessionLocal, get_db
+from ..database.database import get_db
 from ..models.models import User, Candidate, Vote, VotingSession
-from ..schemas.schemas import CandidateOut, VotingStatusOut
+from ..schemas.schemas import CandidateOut, VotingStatusOut, ResultsOut
 from ..auth.auth import get_current_user
-from sqlalchemy import func
 from collections import defaultdict
+
+from ..utils import get_title_or_message
 
 router = APIRouter()
 
@@ -73,6 +74,16 @@ def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current
     if not candidate:
         raise HTTPException(status_code=404, detail="Candidate not found")
 
+    # Check if the user already voted for the candidate in this stage
+    existing_vote = db.query(Vote).filter_by(
+        user_id=current_user.id,
+        candidate_id=candidate_id,
+        stage=stage,
+        session_id=current_session.id
+    ).first()
+    if existing_vote:
+        raise HTTPException(status_code=400, detail="You have already voted for this candidate in this stage")
+
     # Calculate points based on vote order (3, 2, 1)
     points = 3 - vote_count if stage == 1 else 1
 
@@ -109,14 +120,53 @@ def vote(candidate_id: int, stage: int, current_user: User = Depends(get_current
 
     return {"message": "Vote recorded"}
 
-@router.get("/results/{stage}")
+@router.get("/results/{stage}", response_model=ResultsOut)
 def results(stage: int, db: Session = Depends(get_db)):
-    from collections import defaultdict
-    results = defaultdict(int)
-    for v in db.query(Vote).filter_by(stage=stage).all():
-        results[v.candidate_id] += v.points
-    sorted_results = sorted(results.items(), key=lambda x: x[1], reverse=True)
-    return [{"candidate_id": cid, "points": count} for cid, count in sorted_results]
+    # Get current active session
+    current_session = db.query(VotingSession).filter_by(active=True).first()
+    if not current_session:
+        raise HTTPException(status_code=400, detail="No active voting session")
+
+    # Get all candidates
+    candidates = db.query(Candidate).all()
+    candidate_dict = {c.id: c for c in candidates}
+
+    # Calculate points for current stage
+    current_stage_results = defaultdict(int)
+    for v in db.query(Vote).filter_by(stage=stage, session_id=current_session.id).all():
+        current_stage_results[v.candidate_id] += v.points
+
+    # Add candidates with 0 points to the results
+    for candidates in list_candidates(stage=stage, db=db):
+        if candidates.id not in current_stage_results:
+            current_stage_results[candidates.id] = 0
+
+    # Calculate total points across all stages
+    total_points = defaultdict(int)
+    for v in db.query(Vote).filter_by(session_id=current_session.id).all():
+        total_points[v.candidate_id] += v.points
+
+    # Combine results
+    results = []
+    for candidate_id in current_stage_results:
+        candidate = candidate_dict.get(candidate_id)
+        if candidate:
+            results.append({
+                "candidate_id": candidate_id,
+                "points": current_stage_results[candidate_id],
+                "name": candidate.name,
+                "photo": candidate.photo,
+                "description": candidate.description,
+                "total_points": total_points[candidate_id]
+            })
+
+    # Sort by current stage points
+    results.sort(key=lambda x: x["points"], reverse=True)
+
+    return {
+        "current_stage": stage,
+        "results": results
+    }
 
 @router.get("/winner")
 def get_winner(db: Session = Depends(get_db)):
@@ -241,44 +291,7 @@ def get_voting_status(current_user: User = Depends(get_current_user), db: Sessio
             # No winner yet
             pass
 
-    # Generate title and waiting message based on stage, votes remaining, and tie status
-    title = ""
-    waiting_message = ""
-
-    # If we have a winner, set appropriate title and clear waiting message
-    if winner:
-        title = "Voting Completed! Winner Announced"
-        waiting_message = ""
-    elif current_stage == 1:
-        if votes_remaining == 3:
-            title = f"Round {current_stage}. Choose the 1st Winner (3 points) 🏆"
-        elif votes_remaining == 2:
-            title = f"Round {current_stage}. Choose the 2nd Winner (2 points) 🥈"
-        elif votes_remaining == 1:
-            title = f"Round {current_stage}. Choose the 3rd Winner (1 point) 🥉"
-        elif votes_remaining == 0:
-            title = f"Round {current_stage}. Voting Completed!"
-            waiting_message = "Waiting for other users to finish voting..."
-    elif current_stage == 2:
-        if votes_remaining == 1:
-            title = f"Round {current_stage}. Choose the Winner (1 point) 🏆"
-        elif votes_remaining == 0:
-            title = f"Round {current_stage}. Voting Completed!"
-            waiting_message = "Waiting for other users to finish voting..."
-    elif current_stage == 3:
-        if is_tie:
-            if current_user.is_president:
-                if votes_remaining == 1:
-                    title = f"Round {current_stage}. President Tie-Breaker (1 point)."
-                elif votes_remaining == 0:
-                    title = f"Round {current_stage}. Voting Completed!"
-                    waiting_message = "Waiting for results to be processed..."
-            else:
-                title = f"Round {current_stage}. Waiting for President to break the tie."
-                waiting_message = "The president will cast the deciding vote."
-        else:
-            title = f"Round {current_stage}. Calculating final results..."
-            waiting_message = "The final results are being calculated."
+    title, waiting_message = get_title_or_message(current_stage, current_user, is_tie, votes_remaining, winner)
 
     return {
         "title": title,
@@ -287,3 +300,5 @@ def get_voting_status(current_user: User = Depends(get_current_user), db: Sessio
         "waiting_message": waiting_message,
         "winner": winner
     }
+
+

@@ -16,12 +16,18 @@ export type User = {
   hashed_password: string;
 };
 
-export interface Result {
+export interface StageResult {
     candidate_id: number;
-    candidate_name: string;
-    votes: number;
-    user_id: number;
     points: number;
+    name: string;
+    photo: string;
+    description: string;
+    total_points: number;
+}
+
+export interface Result {
+    current_stage: number;
+    results: StageResult[];
 }
 
 export type TokenResponse = {
