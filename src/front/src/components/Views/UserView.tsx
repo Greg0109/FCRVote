@@ -15,7 +15,7 @@ export default function UserView({ currentUser }: UserViewProps) {
   const [error, setError] = useState('');
   const [currentStage, setCurrentStage] = useState(1);
   const [votesRemaining, setVotesRemaining] = useState(3);
-  const [title, setTitle] = useState(``);
+  const [title, setTitle] = useState('');
   const [isPolling, setIsPolling] = useState(false);
   const [waitingMessage, setWaitingMessage] = useState('');
   const [isTie, setIsTie] = useState(false);
@@ -193,7 +193,6 @@ export default function UserView({ currentUser }: UserViewProps) {
             <div className="mobile-winner-description">
               {winner.description}
             </div>
-            <br/>
             <div className="mobile-winner-points">
               Total Points: {winner.points}
             </div>
@@ -215,40 +214,60 @@ export default function UserView({ currentUser }: UserViewProps) {
         <>
           <div className="mobile-candidate-list">
             {candidates.map(candidate => (
-            <div
-              key={candidate.id}
-              className={`mobile-candidate-card ${
-                selectedCandidate === candidate.id ? 'selected' : ''
-              }`}
-              onClick={() => setSelectedCandidate(candidate.id)}
-            >
-              <div className="mobile-candidate-content">
-                <div className="mobile-candidate-photo">
-                  <img
-                      src={candidate.photo}
-                      alt={`${candidate.name}'s photo`}
-                      className="mobile-candidate-photo-img"
-                  />
-                </div>
+              <div
+                key={candidate.id}
+                className={`mobile-candidate-card ${
+                  selectedCandidate === candidate.id ? 'selected' : ''
+                }`}
+                onClick={() => setSelectedCandidate(candidate.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  border: selectedCandidate === candidate.id ? '2px dashed #007aff' : '1px solid #ddd',
+                  backgroundColor: selectedCandidate === candidate.id ? '#f0f8ff' : '#fff',
+                  marginBottom: '12px',
+                  cursor: 'pointer',
+                }}
+              >
+                <img
+                  src={candidate.photo}
+                  alt={`${candidate.name}'s photo`}
+                  style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '50%',
+                    objectFit: 'cover',
+                    marginRight: '16px',
+                  }}
+                />
                 <div>
-                  <div className="mobile-candidate-name">
-                    {candidate.name}
-                  </div>
-                  <div className="mobile-candidate-description">
-                    {candidate.description}
-                  </div>
+                  <div style={{ fontWeight: 600 }}>{candidate.name}</div>
+                  <div style={{ fontStyle: 'italic', marginTop: '4px', color: '#444' }}>"{candidate.description}"</div>
                 </div>
               </div>
-            </div>
             ))}
           </div>
 
           <button
-              className="mobile-continue-button"
-              onClick={submitVote}
-              disabled={selectedCandidate === null || votesRemaining <= 0}
+            onClick={submitVote}
+            disabled={selectedCandidate === null || votesRemaining <= 0}
+            style={{
+              width: '100%',
+              padding: '16px',
+              backgroundColor: '#000',
+              color: '#fff',
+              fontWeight: 'bold',
+              fontSize: '17px',
+              borderRadius: '999px',
+              marginTop: '16px',
+              border: 'none',
+              cursor: selectedCandidate === null || votesRemaining <= 0 ? 'not-allowed' : 'pointer',
+              opacity: selectedCandidate === null || votesRemaining <= 0 ? 0.6 : 1,
+            }}
           >
-          Continue
+            Continue
           </button>
         </>
       )}

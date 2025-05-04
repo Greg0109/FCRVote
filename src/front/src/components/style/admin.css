@@ -1,0 +1,54 @@
+.admin-card-content {
+  min-height: 210px;
+}
+
+.admin-candidate-form {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+}
+
+.admin-candidate-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.admin-hidden-input {
+  display: none;
+}
+
+.align-horizontal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.admin-form-field {
+  margin-bottom: 1rem;
+}
+
+.admin-form-submit {
+  margin-top: 1rem;
+}
+
+.admin-form-checkbox {
+  margin-bottom: 1rem;
+}
+
+.admin-section {
+  margin-bottom: 1.5rem;
+}

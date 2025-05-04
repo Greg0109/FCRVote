@@ -7,6 +7,8 @@ import { Checkbox } from '../ui/checkbox';
 import * as api from '../../api';
 import * as types from '../../types';
 import '../../App.css';
+import '../style/admin.css';
+import '../style/input.css';
 
 export default function AdminView() {
     const [candidateName, setCandidateName] = useState('');
@@ -247,14 +249,14 @@ export default function AdminView() {
             <AdminCard>
                 <div>
                     <Card>
-                        <CardContent style={{ minHeight: '210px' }}>
+                        <CardContent className="admin-card-content">
                             <h3>Add Candidate</h3>
                             <form onSubmit={handleAddCandidate}>
-                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
+                                <div className="admin-candidate-form">
                                     <div>
                                         {photo ? (
                                             <AddPhotoButton onClick={UploadPhoto}>
-                                                <img src={photo} alt="Uploaded" style={{ width: '48px', height: '48px', borderRadius: '50%' }} />
+                                                <img src={photo} alt="Uploaded" className="admin-candidate-photo" />
                                             </AddPhotoButton>
                                         ) : (
                                             <AddPhotoButton onClick={UploadPhoto}>+</AddPhotoButton>
@@ -273,7 +275,7 @@ export default function AdminView() {
                                             type="file"
                                             accept="image/*"
                                             ref={fileInputRef}
-                                            style={{ display: 'none' }}
+                                            className="admin-hidden-input"
                                             onChange={handlePhotoUpload}
                                             hidden
                                         />
@@ -405,7 +407,7 @@ export default function AdminView() {
                             {pastSessions.length > 0 ? (
                                 <ul>
                                     {pastSessions.map((session) => (
-                                        <li key={session.id} className="flex justify-between items-center">
+                                        <li key={session.id} className="align-horizontal">
                                             <span>{session.name} - {session.description}</span>
                                             <Button onClick={() => handleDeleteSession(session.id)}>Delete</Button>
                                         </li>
