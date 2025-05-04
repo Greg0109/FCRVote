@@ -31,7 +31,7 @@ def main():
     # Login as admin
     token = login('admin', '1234')
 
-    # print admint token with ofbuscation at the end
+    # print admin token with obfuscation at the end
     print(f"Admin token: {token[:10]}...")
 
     # Stop any existing session
