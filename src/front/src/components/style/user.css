@@ -198,3 +198,23 @@
   align-items: center;
   margin-right: 10%;
 }
+
+/* Reusable primary button style for voting and other actions */
+.fcr-primary-button {
+  width: 100%;
+  padding: 16px;
+  background-color: #000;
+  color: #fff;
+  font-weight: bold;
+  font-size: 17px;
+  border-radius: 999px;
+  margin-top: 16px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.fcr-primary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

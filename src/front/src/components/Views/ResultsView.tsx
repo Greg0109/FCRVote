@@ -75,7 +75,7 @@ export default function ResultsView({ currentStage, setShowResults }: ResultsVie
       </div>
 
       <button
-        className="mobile-continue-button"
+        className="fcr-primary-button"
         onClick={handleNextStage}
       >
         Continue to Next Round

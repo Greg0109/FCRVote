@@ -22,28 +22,35 @@ export default function UserView({ currentUser }: UserViewProps) {
   const [isTie, setIsTie] = useState(false);
   const [winner, setWinner] = useState<Candidate>();
   const [showResults, setShowResults] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const fetchCandidates = useCallback(async (stage: number) => {
     setError('');
     setMessage('');
+    setLoading(true);
     try {
       const [candidatesRes] = await Promise.all([
         api.fetchCandidates(stage),
       ]);
       const fetchedCandidates: Candidate[] = candidatesRes.data;
       setCandidates(fetchedCandidates);
+      setHasLoadedOnce(true);
+      setLoading(false);
     } catch (err: any) {
       const errorMsg = err.response?.data?.detail || 'Failed to load voting data.';
       if (errorMsg === "No active session found") {
         setIsPolling(true);
       }
       setError(errorMsg);
+      setLoading(false);
       console.error("Fetch data failed:", errorMsg, err);
     }
   }, [currentUser.id]);
 
   const fetchVotingStatus = useCallback(async () => {
     setError('');
+    setLoading(true);
     try {
       // First get the current session to check the stage
       const sessionRes = await api.getCurrentVotingSession();
@@ -74,13 +81,15 @@ export default function UserView({ currentUser }: UserViewProps) {
         setWinner(status.winner);
         setIsPolling(false);
       }
-
+      setHasLoadedOnce(true);
+      setLoading(false);
     } catch (err: any) {
       const errorMsg = err.response?.data?.detail || 'Failed to load voting status.';
       if (errorMsg === "No active session found") {
         setIsPolling(true);
       }
       setError(errorMsg);
+      setLoading(false);
       console.error("Fetch voting status failed:", errorMsg, err);
     }
   }, [currentStage, fetchCandidates]);
@@ -97,18 +106,21 @@ export default function UserView({ currentUser }: UserViewProps) {
 
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true);
       try {
         const sessionRes = await api.getCurrentVotingSession();
         const stage = Number(sessionRes.data.stage);
         setCurrentStage(stage);
         await fetchCandidates(stage);
         await fetchVotingStatus();
+        setLoading(false);
       } catch (err: any) {
         const errorMsg = err.response?.data?.detail || 'Failed to load session.';
         if (errorMsg === "No active session found") {
           setIsPolling(true);
         }
         setError(errorMsg);
+        setLoading(false);
         console.error("Session fetch failed:", errorMsg, err);
       }
     };
@@ -173,8 +185,8 @@ export default function UserView({ currentUser }: UserViewProps) {
     return <ResultsView currentStage={currentStage-1} setShowResults={setShowResults} />;
   }
 
-  // Splash view for no active session
-  if (error === 'No active session found') {
+  // Splash view for no active session, or only during initial load
+  if ((loading && !hasLoadedOnce) || error === 'No active session found') {
     return (
       <div className="mobile-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', textAlign: 'center' }}>
         <img src={logo} alt="Foundation Logo" style={{ width: 180, height: 180, marginBottom: 24, marginTop: 32 }} />
@@ -186,7 +198,7 @@ export default function UserView({ currentUser }: UserViewProps) {
         </h3>
         <div style={{ color: '#555', fontSize: 16, marginBottom: 16 }}>
           Your participation is vital to ensuring that we celebrate the most deserving contributors to the scientific community.<br /><br />
-          <b>The voting session will start shortly.</b>
+          <b>{loading && !hasLoadedOnce ? 'The voting session will start shortly.' : 'The voting session will start shortly.'}</b>
         </div>
       </div>
     );
@@ -282,19 +294,7 @@ export default function UserView({ currentUser }: UserViewProps) {
           <button
             onClick={submitVote}
             disabled={selectedCandidate === null || votesRemaining <= 0}
-            style={{
-              width: '100%',
-              padding: '16px',
-              backgroundColor: '#000',
-              color: '#fff',
-              fontWeight: 'bold',
-              fontSize: '17px',
-              borderRadius: '999px',
-              marginTop: '16px',
-              border: 'none',
-              cursor: selectedCandidate === null || votesRemaining <= 0 ? 'not-allowed' : 'pointer',
-              opacity: selectedCandidate === null || votesRemaining <= 0 ? 0.6 : 1,
-            }}
+            className="fcr-primary-button"
           >
             Continue
           </button>
