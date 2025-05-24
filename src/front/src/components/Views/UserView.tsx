@@ -3,6 +3,7 @@ import * as api from '../../api';
 import { Candidate, User } from '../../types';
 import '../style/user.css';
 import ResultsView from './ResultsView';
+import logo from '../../logo.svg';
 
 interface UserViewProps {
   currentUser: User;
@@ -33,6 +34,9 @@ export default function UserView({ currentUser }: UserViewProps) {
       setCandidates(fetchedCandidates);
     } catch (err: any) {
       const errorMsg = err.response?.data?.detail || 'Failed to load voting data.';
+      if (errorMsg === "No active session found") {
+        setIsPolling(true);
+      }
       setError(errorMsg);
       console.error("Fetch data failed:", errorMsg, err);
     }
@@ -73,6 +77,9 @@ export default function UserView({ currentUser }: UserViewProps) {
 
     } catch (err: any) {
       const errorMsg = err.response?.data?.detail || 'Failed to load voting status.';
+      if (errorMsg === "No active session found") {
+        setIsPolling(true);
+      }
       setError(errorMsg);
       console.error("Fetch voting status failed:", errorMsg, err);
     }
@@ -98,6 +105,9 @@ export default function UserView({ currentUser }: UserViewProps) {
         await fetchVotingStatus();
       } catch (err: any) {
         const errorMsg = err.response?.data?.detail || 'Failed to load session.';
+        if (errorMsg === "No active session found") {
+          setIsPolling(true);
+        }
         setError(errorMsg);
         console.error("Session fetch failed:", errorMsg, err);
       }
@@ -163,6 +173,25 @@ export default function UserView({ currentUser }: UserViewProps) {
     return <ResultsView currentStage={currentStage-1} setShowResults={setShowResults} />;
   }
 
+  // Splash view for no active session
+  if (error === 'No active session found') {
+    return (
+      <div className="mobile-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', textAlign: 'center' }}>
+        <img src={logo} alt="Foundation Logo" style={{ width: 180, height: 180, marginBottom: 24, marginTop: 32 }} />
+        <h2 style={{ fontWeight: 600, fontSize: 22, marginBottom: 12 }}>
+          Fundacion Conchita Rabago de Jimenez Diaz
+        </h2>
+        <h3 style={{ fontWeight: 500, fontSize: 18, marginBottom: 24, color: '#333' }}>
+          Welcome to the voting for the Foundation Rabago 2025!
+        </h3>
+        <div style={{ color: '#555', fontSize: 16, marginBottom: 16 }}>
+          Your participation is vital to ensuring that we celebrate the most deserving contributors to the scientific community.<br /><br />
+          <b>The voting session will start shortly.</b>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mobile-container">
       <div className="mobile-round-title">
@@ -204,13 +233,13 @@ export default function UserView({ currentUser }: UserViewProps) {
       )}
 
       {/* Show loading message when no candidates are available */}
-      {!winner && candidates.length === 0 && !error && (
+      {!winner && candidates.length === 0 && !error && !isPolling && (
         <p className="mobile-loading">Loading candidates...</p>
       )}
 
       {/* Only show candidate list and voting button if winner is not available and
           (we're not in stage 3 or we're in stage 3 with a tie and the user is the president) */}
-      {!winner && (currentStage !== 3 || (currentStage === 3 && isTie && currentUser.is_president)) && (
+      {!winner && !isPolling && (currentStage !== 3 || (currentStage === 3 && isTie && currentUser.is_president)) && (
         <>
           <div className="mobile-candidate-list">
             {candidates.map(candidate => (
