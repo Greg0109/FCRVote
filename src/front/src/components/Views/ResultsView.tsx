@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as api from '../../api';
-import '../style/results.css';
+import '../style/unified.css';
 
 interface ResultsViewProps {
   currentStage: number;
@@ -30,52 +30,48 @@ export default function ResultsView({ currentStage, setShowResults }: ResultsVie
   };
 
   return (
-    <div className="mobile-container">
-      <div className="mobile-round-title">
+    <div className="fcr-container">
+      <div className="fcr-title">
         Round {currentStage} Results
       </div>
 
-      {error && <p className="mobile-error">{error}</p>}
+      {error && <p className="fcr-error">{error}</p>}
 
-      <div className="mobile-results-list">
+      <div className="fcr-flex-col fcr-gap-4 fcr-mt-4">
         {results.map((result, index) => (
-          <div key={result.candidate_id} className="mobile-result-card">
-            <div className="mobile-result-content">
-              <div className="mobile-result-photo">
-                <img
-                  src={result.photo || '/default-photo.png'}
-                  alt={`${result.name}`}
-                  className="mobile-result-photo-img"
-                />
+          <div key={result.candidate_id} className="fcr-card-horizontal">
+            <img
+              src={result.photo || '/default-photo.png'}
+              alt={`${result.name}`}
+              className="candidate-photo"
+            />
+            <div className="fcr-flex-col">
+              <div className="fcr-title">
+                {result.name}
               </div>
-              <div className="mobile-result-info">
-                <div className="mobile-result-name">
-                  {result.name}
+              <div className="fcr-description">
+                {result.description}
+              </div>
+              <div className="fcr-flex-col">
+                <div className="fcr-label">
+                  Round {currentStage} Points: {result.points}
                 </div>
-                <div className="mobile-result-description">
-                  {result.description}
-                </div>
-                <div className="mobile-result-points">
-                  <div className="mobile-result-stage-points">
-                    Round {currentStage} Points: {result.points}
-                  </div>
-                  <div className="mobile-result-total-points">
-                    Total Points: {result.total_points}
-                  </div>
+                <div className="fcr-description">
+                  Total Points: {result.total_points}
                 </div>
               </div>
-              {index === 0 && (
-                <div className="mobile-result-winner-badge">
-                  🏆
-                </div>
-              )}
             </div>
+            {index === 0 && (
+              <div className="fcr-title">
+                🏆
+              </div>
+            )}
           </div>
         ))}
       </div>
 
       <button
-        className="fcr-primary-button"
+        className="fcr-button fcr-mt-4"
         onClick={handleNextStage}
       >
         Continue to Next Round

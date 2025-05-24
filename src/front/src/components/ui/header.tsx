@@ -1,7 +1,7 @@
 import React from "react";
 import { CardTitle } from "./card";
 import { LogoutButton } from "./button";
-import "../style/header.css";
+import '../style/unified.css';
 
 export default function FCRHeader(props: { token: string | null, onClick: () => void }) {
     return <header className="fcr-header">

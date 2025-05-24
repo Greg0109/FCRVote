@@ -7,8 +7,7 @@ import { Checkbox } from '../ui/checkbox';
 import * as api from '../../api';
 import * as types from '../../types';
 import '../../App.css';
-import '../style/admin.css';
-import '../style/input.css';
+import '../style/unified.css';
 
 export default function AdminView() {
     const [candidateName, setCandidateName] = useState('');

@@ -1,0 +1,328 @@
+/* =============================
+   Layout & Container
+   ============================= */
+.fcr-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+.fcr-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 75%;
+}
+.fcr-flex { display: flex; }
+.fcr-flex-col { display: flex; flex-direction: column; }
+.fcr-items-center { align-items: center; }
+.fcr-justify-between { justify-content: space-between; }
+.fcr-gap-4 { gap: 1rem; }
+.fcr-mt-4 { margin-top: 1rem; }
+
+/* =============================
+   Typography
+   ============================= */
+.fcr-title {
+  font-family: 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  text-align: center;
+  color: #1C1B1F;
+  margin-bottom: 1rem;
+}
+.fcr-label {
+  font-family: 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.4;
+  text-align: center;
+  color: #676769;
+  margin-bottom: 0.5rem;
+}
+.fcr-description {
+  font-family: 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 400;
+  font-size: 0.95rem;
+  color: #555;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* =============================
+   Card Styles
+   ============================= */
+.fcr-card, .fcr-card-horizontal, .fcr-admin-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  border: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
+}
+.fcr-card {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.fcr-card-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+.fcr-admin-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+}
+.fcr-card-title {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: #1C1B1F;
+}
+.fcr-card-content {
+  font-weight: 400;
+  font-size: 0.95rem;
+  color: #1C1B1F;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* =============================
+   Buttons
+   ============================= */
+.fcr-button, .fcr-primary-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 14px 8px;
+  background: #1C1B1F;
+  color: #fff;
+  font-family: 'Avenir';
+  font-weight: 500;
+  font-size: 1rem;
+  border: none;
+  border-radius: 34px;
+  box-shadow: 0 4px 14px rgba(1,26,41,0.17);
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.2s, opacity 0.2s;
+}
+.fcr-button:disabled, .fcr-primary-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.fcr-remove-button, .fcr-logout-button {
+  background: transparent;
+  border: none;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.fcr-remove-button::before { content: '🗑️'; font-size: 16px; }
+.fcr-logout-button::before { content: '🚪'; font-size: 16px; }
+.fcr-add-photo-button {
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* =============================
+   Form & Input
+   ============================= */
+.fcr-input, input {
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  width: 100%;
+  font-size: 1rem;
+  font-family: 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+.fcr-input:focus, input:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66,153,225,0.15);
+}
+input[type="checkbox"] {
+  width: auto;
+}
+.fcr-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+.admin-hidden-input { display: none; }
+
+/* =============================
+   Admin & Utility
+   ============================= */
+.admin-card-content { min-height: 210px; }
+.admin-candidate-form { display: flex; flex-direction: row; align-items: center; gap: 1rem; }
+.admin-candidate-photo { width: 48px; height: 48px; border-radius: 50%; }
+.align-horizontal, .flex { display: flex; justify-content: space-between; align-items: center; }
+.justify-between { justify-content: space-between; }
+.items-center { align-items: center; }
+.admin-form-field, .admin-form-checkbox { margin-bottom: 1rem; }
+.admin-form-submit { margin-top: 1rem; }
+.admin-section { margin-bottom: 1.5rem; }
+
+/* =============================
+   Candidate & Photo
+   ============================= */
+.candidate-card, .mobile-candidate-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.candidate-card.selected, .mobile-candidate-card.selected { border-color: #007aff; }
+.candidate-photo, .mobile-candidate-photo-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.candidate-info { flex-grow: 1; }
+.candidate-name, .mobile-candidate-name { font-weight: bold; font-size: 1.1rem; margin: 0; }
+.candidate-description, .mobile-candidate-description { margin: 4px 0 0 0; font-size: 0.95rem; color: #555; }
+.candidate-remove-button { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+
+/* =============================
+   Results & Winner
+   ============================= */
+.mobile-result-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 1rem;
+  position: relative;
+}
+.mobile-result-content { display: flex; gap: 1rem; align-items: center; }
+.mobile-result-photo-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; }
+.mobile-result-info { flex-grow: 1; }
+.mobile-result-name { font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; }
+.mobile-result-description { font-size: 0.9rem; color: #666; margin-bottom: 0.5rem; }
+.mobile-result-points { display: flex; flex-direction: column; gap: 0.25rem; }
+.mobile-result-stage-points { font-weight: bold; color: #2c3e50; }
+.mobile-result-total-points { color: #666; font-size: 0.9rem; }
+.mobile-result-winner-badge { position: absolute; top: 0.5rem; right: 0.5rem; font-size: 1.5rem; }
+
+/* =============================
+   Messages & States
+   ============================= */
+.fcr-message {
+  text-align: center;
+  color: green;
+  margin-top: 8px;
+}
+.fcr-error, .mobile-error, .login-error {
+  text-align: center;
+  color: #ef4444;
+  margin-top: 8px;
+}
+.mobile-loading { text-align: center; font-size: 14px; margin-bottom: 12px; }
+.mobile-waiting {
+  text-align: center;
+  margin: 20px 0;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: #666;
+  font-size: 16px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* =============================
+   Miscellaneous
+   ============================= */
+.label-input-wrapper { margin-bottom: 1rem; }
+.input-margin { margin-top: 0.5rem; }
+
+/* Winner styles */
+.mobile-winner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  animation: fadeIn 1s ease-in-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.mobile-winner-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #007aff;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.mobile-winner-card {
+  background: #fff;
+  border: 2px solid #007aff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 100%;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0,122,255,0.2);
+}
+.mobile-winner-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.mobile-winner-points {
+  color: #007aff;
+  text-align: center;
+  margin-top: 10px;
+}
+.mobile-winner-description {
+  font-size: 16px;
+  color: #555;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+.mobile-winner-message {
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+  margin-top: 10px;
+}
+.mobile-candidate-photo { display: inline-block; margin-right: 10px; }
+.mobile-candidate-content { display: flex; align-items: center; margin-right: 10%; } 

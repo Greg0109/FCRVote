@@ -3,9 +3,7 @@ import {Card, CardContent} from '../ui/card';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import '../style/label.css';
-import '../style/login.css';
-import '../style/input.css';
+import '../style/unified.css';
 
 interface LoginFormProps {
     onLogin: (username: string, password: string) => void;
