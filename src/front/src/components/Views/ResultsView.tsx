@@ -26,39 +26,46 @@ export default function ResultsView({ currentStage, setShowResults }: ResultsVie
   }, [currentStage]);
 
   const handleNextStage = () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      setShowResults(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setShowResults(false);
   };
 
   return (
-    <div className="fcr-container">
-      <div className="fcr-title">
-        Round {currentStage} Results
+    <div className="results-container">
+      <div className="results-header">
+        <div className="results-round">
+          Round {currentStage} Results
+        </div>
+        <div className="results-subtitle">
+          Here are the results for this round of voting
+        </div>
       </div>
 
-      {error && <p className="fcr-error">{error}</p>}
+      {error && <div className="user-message error">{error}</div>}
 
-      <div className="fcr-flex-col fcr-gap-4 fcr-mt-4">
+      <div className="results-grid">
         {results.map((result, index) => (
-          <div key={result.candidate_id} className="fcr-card-horizontal">
-            <img
-              src={result.photo || '/default-photo.png'}
-              alt={`${result.name}`}
-              className="candidate-photo"
-            />
-            <div className="fcr-flex-col">
-              <div className="fcr-title">
-                {result.name}
-              </div>
-              <div className="fcr-description">
-                {result.description}
-              </div>
-              <div className="fcr-flex-col">
-                <div className="fcr-label">
-                  Round {currentStage} Points: {result.points}
+          <div key={result.candidate_id} className="results-card">
+            <div className="results-card-content">
+              <img
+                src={result.photo || '/default-photo.png'}
+                alt={`${result.name}`}
+                className="results-photo"
+              />
+              <div className="results-info">
+                <div className="results-name">
+                  {result.name}
                 </div>
-                <div className="fcr-description">
-                  Total Points: {result.total_points}
+                <div className="results-description">
+                  {result.description}
+                </div>
+                <div className="results-points">
+                  <div className="results-round-points">
+                    Round {currentStage} Points: {result.points}
+                  </div>
+                  <div className="results-total-points">
+                    Total Points: {result.total_points}
+                  </div>
                 </div>
               </div>
             </div>
@@ -66,12 +73,14 @@ export default function ResultsView({ currentStage, setShowResults }: ResultsVie
         ))}
       </div>
 
-      <button
-        className="fcr-button fcr-mt-4"
-        onClick={handleNextStage}
-      >
-        Continue to Next Round
-      </button>
+      <div className="results-button">
+        <button
+          className="fcr-button"
+          onClick={handleNextStage}
+        >
+          Continue to Next Round
+        </button>
+      </div>
     </div>
   );
 } 
