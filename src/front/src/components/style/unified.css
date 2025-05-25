@@ -3,8 +3,8 @@
    ============================= */
 .fcr-container {
   max-width: 400px;
-  margin: 2rem auto;
-  padding: 2rem;
+  margin: 1rem auto;
+  padding: 1rem;
   background: #f9f9f9;
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.08);
@@ -132,8 +132,17 @@
   cursor: pointer;
 }
 .fcr-remove-button::before { content: '🗑️'; font-size: 16px; }
-.fcr-logout-button::before { content: '🚪'; font-size: 16px; }
-.fcr-add-photo-button {
+.fcr-logout-button::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: url('../../svgs/logout.svg') no-repeat center center;
+  background-size: contain;
+  margin-right: 6px;
+  vertical-align: middle;
+  font-size: 0;
+}.fcr-add-photo-button {
   background: white;
   border: none;
   border-radius: 50%;
