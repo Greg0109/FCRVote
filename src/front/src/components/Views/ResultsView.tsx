@@ -26,6 +26,7 @@ export default function ResultsView({ currentStage, setShowResults }: ResultsVie
   }, [currentStage]);
 
   const handleNextStage = () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setShowResults(false);
   };
 

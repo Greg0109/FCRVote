@@ -165,6 +165,7 @@ export default function UserView({ currentUser }: UserViewProps) {
     try {
       await api.vote(Number(selectedCandidate), currentStage);
       setMessage('Vote submitted successfully!');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setSelectedCandidate(null);
 
       // Fetch candidates and voting status to update the UI
