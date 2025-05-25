@@ -3,11 +3,17 @@
    ============================= */
 .fcr-container {
   max-width: 400px;
+  min-width: 400px;
   margin: 1rem auto;
   padding: 1rem;
   background: #f9f9f9;
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+
+  @media only screen and (max-width: 600px) {
+    max-width: 300px;
+    min-width: 300px;
+  }
 }
 .fcr-header {
   display: flex;
@@ -16,7 +22,7 @@
   width: 75%;
 }
 .fcr-flex { display: flex; }
-.fcr-flex-col { display: flex; flex-direction: column; }
+.fcr-flex-col { display: flex; flex-direction: column; width: 100%; }
 .fcr-items-center { align-items: center; }
 .fcr-justify-between { justify-content: space-between; }
 .fcr-gap-4 { gap: 1rem; }
@@ -275,7 +281,7 @@ input[type="checkbox"] {
    Miscellaneous
    ============================= */
 .label-input-wrapper { margin-bottom: 1rem; }
-.input-margin { margin-top: 0.5rem; }
+.input-margin { margin-top: 0.5rem; max-width: 200px }
 
 /* Winner styles */
 .mobile-winner-container {

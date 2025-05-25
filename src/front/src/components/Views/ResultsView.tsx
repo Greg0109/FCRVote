@@ -62,11 +62,6 @@ export default function ResultsView({ currentStage, setShowResults }: ResultsVie
                 </div>
               </div>
             </div>
-            {index === 0 && (
-              <div className="fcr-title">
-                🏆
-              </div>
-            )}
           </div>
         ))}
       </div>

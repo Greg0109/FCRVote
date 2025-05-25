@@ -220,7 +220,6 @@ export default function UserView({ currentUser }: UserViewProps) {
       {/* Show winner view when winner is available */}
       {winner && (
         <div className="fcr-card fcr-mt-4">
-          <h2 className="fcr-title">🏆 Winner Announced! 🏆</h2>
           <div className="fcr-card-horizontal">
             <img
               src={winner.photo}
