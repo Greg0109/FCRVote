@@ -3,7 +3,7 @@ import * as api from '../../api';
 import { Candidate, User } from '../../types';
 import '../style/unified.css';
 import ResultsView from './ResultsView';
-import logo from '../../svgs/logo.svg';
+import logo from '../../svgs/logo.png';
 
 interface UserViewProps {
   currentUser: User;
@@ -189,7 +189,7 @@ export default function UserView({ currentUser }: UserViewProps) {
   if ((loading && !hasLoadedOnce) || error === 'No active session found') {
     return (
       <div className="fcr-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', textAlign: 'center' }}>
-        <img src={logo} alt="Foundation Logo" style={{ width: 180, height: 180 }} />
+        <img src={logo} alt="Foundation Logo" style={{ width: 180, height: 180, background: 'transparent' }} />
         <h2 className="fcr-title" style={{ marginBottom: 12 }}>
           Fundacion Conchita Rabago de Jimenez Diaz
         </h2>
