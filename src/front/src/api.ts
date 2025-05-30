@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Candidate, User, Result, TokenResponse, VotingSession } from './types';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = '';
 
 const apiClient = axios.create({
     baseURL: API_BASE,

@@ -30,7 +30,9 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: fcrvote_tunnel
     restart: unless-stopped
-    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
+    env_file:
+      - .env
+    command: tunnel --no-autoupdate run --token $CLOUDFLARED_TOKEN
     networks:
       - fcrnet
 
