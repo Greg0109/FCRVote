@@ -3,6 +3,8 @@ WORKDIR /home
 RUN mkdir -p /home/front
 ENV ENV="production"
 COPY ../src/front/build /home/front
-RUN pip install -e /home
+COPY ../dist /home
+RUN pip install /home/*.whl
 LABEL authors="greg"
+EXPOSE 8000
 ENTRYPOINT ["fcrvote"]

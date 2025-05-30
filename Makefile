@@ -21,6 +21,12 @@ help:
 	@echo "  make docker-build - Build Docker image"
 
 clean:
+	-rm -r src/front/build
+	-rm -r build
+	-rm -r dist
+	-rm -r *.egg-info
+
+clean-all:
 	-rm -r $(VENV)
 	-rm -r src/front/node_modules
 	-rm -r src/front/build
@@ -28,7 +34,6 @@ clean:
 	-rm -r dist
 	-rm -r *.egg-info
 	-rm -r node_modules
-	-rm -r voting.db
 
 venv:
 	$(UV) venv .venv
@@ -56,8 +61,18 @@ reset-db:
 test:
 	$(PYTHON) ${ROOT_DIR}/src/tests/add.py
 
-dist:
+dist: clean
 	uv build
 
-docker-build:
+docker-build: dist build-front docker-rm
 	docker build -t fcrvote -f docker/Dockerfile .
+
+docker-run: docker-stop
+	docker run -p 8000:8000 fcrvote
+
+docker-stop:
+	docker stop fcrvote || true
+	docker rm fcrvote -f || true
+
+docker-rm: docker-stop
+	docker rmi fcrvote || true

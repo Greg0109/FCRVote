@@ -1,11 +1,12 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 import os
-from .database.database import engine, Base, get_db
-from .routers import auth, voting, admin, users, voting_sessions
-from .models.models import User
+import uvicorn
+from back.database.database import engine, Base, get_db
+from back.routers import auth, voting, admin, users, voting_sessions
+from back.models.models import User
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -49,3 +50,15 @@ if os.getenv("ENV") == "production":
 if not next(get_db()).query(User).filter_by(is_admin=True).first():
     user_model = User()
     user_model.add_admin("admin", "1234")
+
+def main():
+    """Start the uvicorn server."""
+    uvicorn.run(
+        "back.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True if os.getenv("ENV") != "production" else False
+    )
+
+if __name__ == "__main__":
+    main()

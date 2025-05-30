@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime
-from ..database.database import get_db
-from ..models.models import VotingSession, Vote
-from ..auth.auth import get_password_hash
+from back.database.database import get_db
+from back.models.models import VotingSession, Vote
+from back.auth.auth import get_password_hash
 
 router = APIRouter()
 
