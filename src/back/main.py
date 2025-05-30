@@ -56,7 +56,7 @@ def main():
     uvicorn.run(
         "back.main:app",
         host="0.0.0.0",
-        port=8000,
+        port=1095,
         reload=True if os.getenv("ENV") != "production" else False
     )
 

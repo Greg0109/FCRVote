@@ -6,5 +6,5 @@ COPY ../src/front/build /home/front
 COPY ../dist /home
 RUN pip install /home/*.whl
 LABEL authors="greg"
-EXPOSE 8000
+EXPOSE 1095
 ENTRYPOINT ["fcrvote"]

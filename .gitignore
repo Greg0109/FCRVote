@@ -13,3 +13,4 @@ node_modules/
 voting.db
 docker/.env
 docker/postgres_data
+docker/fcrvote.tar

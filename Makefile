@@ -59,7 +59,7 @@ test:
 	$(PYTHON) ${ROOT_DIR}/src/tests/add.py
 
 docker-run: docker-stop
-	docker run -p 8000:8000 fcrvote
+	docker run -p 1095:1095 fcrvote
 
 docker-stop:
 	docker ps -q --filter ancestor=fcrvote | xargs -r docker stop
@@ -81,3 +81,15 @@ docker-build: dist build-front docker-rm
 
 docker-compose:
 	docker compose -f docker/docker-compose.yml up --force-recreate
+
+docker-save: docker-build
+	docker save -o docker/fcrvote.tar fcrvote
+
+docker-send: docker-save
+	scp docker/fcrvote.tar fred:Documents/fcrvote/fcrvote.tar
+	scp docker/docker-compose.yml fred:Documents/fcrvote/docker-compose.yml
+
+docker-load: docker-send
+	ssh fred "docker load -i Documents/fcrvote/fcrvote.tar"
+	ssh fred "rm Documents/fcrvote/fcrvote.tar"
+	rm docker/fcrvote.tar

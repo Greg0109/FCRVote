@@ -5,7 +5,7 @@ services:
     image: fcrvote:latest
     container_name: fcrvote_web
     ports:
-      - "8000:8000"
+      - "1095:1095"
     depends_on:
       - fcrvote_db
     environment:
