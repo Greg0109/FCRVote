@@ -6,7 +6,7 @@ UV=/Users/greg/.cargo/bin/uv
 RUN=$(UV) run
 ROOT_DIR=$(shell pwd)
 
-.PHONY: help venv install run format reset-db build-front run-app
+.PHONY: help venv install run format reset-db build-front run-app clean docker-build
 
 help:
 	@echo "Available commands:"
@@ -18,6 +18,7 @@ help:
 	@echo "  make reset-db     - Delete and recreate the SQLite DB"
 	@echo "  make build-front  - Build the frontend"
 	@echo "  make run-app      - Build frontend and run backend"
+	@echo "  make docker-build - Build Docker image"
 
 clean:
 	-rm -r $(VENV)
@@ -54,3 +55,9 @@ reset-db:
 
 test:
 	$(PYTHON) ${ROOT_DIR}/src/tests/add.py
+
+dist:
+	uv build
+
+docker-build:
+	docker build -t fcrvote -f docker/Dockerfile .

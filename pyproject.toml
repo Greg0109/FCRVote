@@ -1,7 +1,7 @@
 [project]
-name = "voting-app"
+name = "FCRVote"
 version = "0.1.0"
-description = "Add your description here"
+description = "A voting application for Fundacion Conchita Rabago"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
