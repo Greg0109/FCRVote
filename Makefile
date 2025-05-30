@@ -44,12 +44,6 @@ front:
 back:
 	$(RUN) uvicorn src.back.main:app --host 0.0.0.0 --reload
 
-build-front:
-	cd $(ROOT_DIR)/src/front/ && yarn run build
-
-run-app: build-front
-	$(RUN) uvicorn src.back.main:app --host 0.0.0.0 --reload
-
 format:
 	$(UV)x ruff check --fix
 
@@ -61,18 +55,23 @@ reset-db:
 test:
 	$(PYTHON) ${ROOT_DIR}/src/tests/add.py
 
+docker-run: docker-stop
+	docker run -p 8000:8000 fcrvote
+
+docker-stop:
+	docker ps -q --filter ancestor=fcrvote | xargs -r docker stop
+
+docker-clean: docker-stop
+	docker ps -aq --filter ancestor=fcrvote | xargs -r docker rm
+
+docker-rm: docker-clean
+	docker rmi fcrvote || true
+
+build-front:
+	cd $(ROOT_DIR)/src/front/ && yarn run build
+
 dist: clean
 	uv build
 
 docker-build: dist build-front docker-rm
 	docker build -t fcrvote -f docker/Dockerfile .
-
-docker-run: docker-stop
-	docker run -p 8000:8000 fcrvote
-
-docker-stop:
-	docker stop fcrvote || true
-	docker rm fcrvote -f || true
-
-docker-rm: docker-stop
-	docker rmi fcrvote || true
