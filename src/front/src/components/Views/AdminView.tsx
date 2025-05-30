@@ -7,6 +7,7 @@ import { Checkbox } from '../ui/checkbox';
 import * as api from '../../api';
 import * as types from '../../types';
 import '../../App.css';
+import '../style/unified.css';
 
 export default function AdminView() {
     const [candidateName, setCandidateName] = useState('');
@@ -238,29 +239,27 @@ export default function AdminView() {
     }
 
     return (
-        <div>
-            <h2>Admin Panel</h2>
-
-            {message && <p>{message}</p>}
-            {error && <p>Error: {error}</p>}
-
-            <AdminCard>
-                <div>
-                    <Card>
-                        <CardContent style={{ minHeight: '210px' }}>
-                            <h3>Add Candidate</h3>
-                            <form onSubmit={handleAddCandidate}>
-                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '1rem' }}>
+        <div className="admin-grid">
+            {/* Candidates Column */}
+            <div className="admin-column">
+                <div className="admin-card">
+                    <div className="admin-card-header">
+                        <h3>Add Candidate</h3>
+                    </div>
+                    <div className="admin-card-body">
+                        <form onSubmit={handleAddCandidate}>
+                            <div className="admin-form-group">
+                                <div className="admin-candidate-form">
                                     <div>
                                         {photo ? (
                                             <AddPhotoButton onClick={UploadPhoto}>
-                                                <img src={photo} alt="Uploaded" style={{ width: '48px', height: '48px', borderRadius: '50%' }} />
+                                                <img src={photo} alt="Uploaded" className="admin-photo-preview" />
                                             </AddPhotoButton>
                                         ) : (
                                             <AddPhotoButton onClick={UploadPhoto}>+</AddPhotoButton>
                                         )}
                                     </div>
-                                    <div>
+                                    <div className="admin-form-group">
                                         <Input
                                             id="candidatePhoto"
                                             type="text"
@@ -273,7 +272,7 @@ export default function AdminView() {
                                             type="file"
                                             accept="image/*"
                                             ref={fileInputRef}
-                                            style={{ display: 'none' }}
+                                            className="admin-hidden-input"
                                             onChange={handlePhotoUpload}
                                             hidden
                                         />
@@ -284,7 +283,6 @@ export default function AdminView() {
                                             placeholder="Enter candidate name"
                                             required
                                         />
-                                        <br/>
                                         <Input
                                             id="candidateDescription"
                                             type="text"
@@ -295,129 +293,134 @@ export default function AdminView() {
                                         />
                                     </div>
                                 </div>
-                                <br/>
-                                <Button type="submit">Add Candidate</Button>
-                            </form>
-                        </CardContent>
-                    </Card>
-
-                    <br/>
-
-                    <Card>
-                        <CardContent>
-                            <div>
-                                <h3>Candidates</h3>
-                                <div>
-                                    {candidates.map((candidate: types.Candidate) => (
-                                        <AdminCandidateCard
-                                            key={candidate.id}
-                                            photo={candidate.photo}
-                                            name={candidate.name}
-                                            description={candidate.description}
-                                            onRemove={() => handleRemoveCandidate(candidate.id)}
-                                        />
-                                    ))}
-                                </div>
                             </div>
-                        </CardContent>
-                    </Card>
+                            <Button type="submit">Add Candidate</Button>
+                        </form>
+                    </div>
                 </div>
 
-                <div>
-                    <Card>
-                        <CardContent>
-                            <h3>Add User</h3>
-                            <form onSubmit={handleAddUser}>
-                                <div>
-                                    <Label htmlFor="newUsername" label="Username" />
-                                    <br/>
-                                    <Input
-                                        id="newUsername"
-                                        value={newUsername}
-                                        onChange={(e) => setNewUsername(e.target.value)}
-                                        placeholder="Enter username"
-                                        required
-                                    />
-                                </div>
-                                <br/>
-                                <div>
-                                    <Label htmlFor="newPassword" label="Password" />
-                                    <br/>
-                                    <Input
-                                        id="newPassword"
-                                        type="password"
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        placeholder="Enter password"
-                                        required
-                                    />
-                                </div>
-                                <br/>
-                                <div>
-                                    <Checkbox
-                                        htmlFor="isPresident"
-                                        label="Is President"
-                                        checked={isPresident}
-                                        onChange={(e) => setIsPresident(e.target.checked)}
-                                    />
-                                </div>
-                                <Button type="submit">Add User</Button>
-                            </form>
-                        </CardContent>
-                    </Card>
+                <div className="admin-card">
+                    <div className="admin-card-header">
+                        <h3>Candidates</h3>
+                    </div>
+                    <div className="admin-card-body">
+                        <div className="admin-list">
+                            {candidates.map((candidate: types.Candidate) => (
+                                <AdminCandidateCard
+                                    key={candidate.id}
+                                    photo={candidate.photo}
+                                    name={candidate.name}
+                                    description={candidate.description}
+                                    onRemove={() => handleRemoveCandidate(candidate.id)}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                    <br/>
-
-                    <Card>
-                        <CardContent>
-                            <h3>Users</h3>
-                            <div>
-                                {users.map((user: types.User) => (
-                                    <div key={user.id} className="align-horizontal">
-                                        <Label htmlFor="" label={`${user.username}${user.is_president ? ' 👑' : ''}`}/>
-                                        <RemoveButton onClick={() => handleRemoveUser(user.id)}></RemoveButton>
-                                    </div>
-                                ))}
+            {/* Users Column */}
+            <div className="admin-column">
+                <div className="admin-card">
+                    <div className="admin-card-header">
+                        <h3>Add User</h3>
+                    </div>
+                    <div className="admin-card-body">
+                        <form onSubmit={handleAddUser}>
+                            <div className="admin-form-group">
+                                <Label htmlFor="newUsername" label="Username" />
+                                <Input
+                                    id="newUsername"
+                                    value={newUsername}
+                                    onChange={(e) => setNewUsername(e.target.value)}
+                                    placeholder="Enter username"
+                                    required
+                                />
                             </div>
-                        </CardContent>
-                    </Card>
+                            <div className="admin-form-group">
+                                <Label htmlFor="newPassword" label="Password" />
+                                <Input
+                                    id="newPassword"
+                                    type="password"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    placeholder="Enter password"
+                                    required
+                                />
+                            </div>
+                            <div className="admin-form-group">
+                                <Checkbox
+                                    htmlFor="isPresident"
+                                    label="Is President"
+                                    checked={isPresident}
+                                    onChange={(e) => setIsPresident(e.target.checked)}
+                                />
+                            </div>
+                            <Button type="submit">Add User</Button>
+                        </form>
+                    </div>
                 </div>
 
-                <div>
-                    <Card>
-                        <CardContent>
-                            <h3>Sessions</h3>
-
-                            {/* Sesión activa */}
-                            {currentSession ? (
-                                <div>
-                                    <p>Active Session: {currentSession.name}</p>
-                                    <Button onClick={handleEndVotingSession}>End Session</Button>
+                <div className="admin-card">
+                    <div className="admin-card-header">
+                        <h3>Users</h3>
+                    </div>
+                    <div className="admin-card-body">
+                        <div className="admin-list">
+                            {users.map((user: types.User) => (
+                                <div key={user.id} className="admin-list-item">
+                                    <span>{user.username}{user.is_president ? ' 👑' : ''}</span>
+                                    <RemoveButton onClick={() => handleRemoveUser(user.id)} />
                                 </div>
-                            ) : (
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Sessions Column */}
+            <div className="admin-column">
+                <div className="admin-card">
+                    <div className="admin-card-header">
+                        <h3>Voting Sessions</h3>
+                    </div>
+                    <div className="admin-card-body">
+                        {currentSession ? (
+                            <div className="admin-session-item admin-active-session">
+                                <div className="admin-session-info">
+                                    <div className="admin-session-name">{currentSession.name}</div>
+                                    <div className="admin-session-description">{currentSession.description}</div>
+                                </div>
+                                <Button onClick={handleEndVotingSession}>End Session</Button>
+                            </div>
+                        ) : (
+                            <div className="admin-button-group">
                                 <Button onClick={handleStartVotingSession}>Start New Session</Button>
-                            )}
+                            </div>
+                        )}
 
-                            <br />
-
-                            {/* Lista de sesiones pasadas */}
+                        <div className="admin-session-list">
                             <h4>Past Sessions</h4>
                             {pastSessions.length > 0 ? (
-                                <ul>
-                                    {pastSessions.map((session) => (
-                                        <li key={session.id} className="flex justify-between items-center">
-                                            <span>{session.name} - {session.description}</span>
-                                            <Button onClick={() => handleDeleteSession(session.id)}>Delete</Button>
-                                        </li>
-                                    ))}
-                                </ul>
+                                pastSessions.map((session) => (
+                                    <div key={session.id} className="admin-session-item">
+                                        <div className="admin-session-info">
+                                            <div className="admin-session-name">{session.name}</div>
+                                            <div className="admin-session-description">{session.description}</div>
+                                        </div>
+                                        <Button onClick={() => handleDeleteSession(session.id)}>Delete</Button>
+                                    </div>
+                                ))
                             ) : (
                                 <p>No past sessions available.</p>
                             )}
-                        </CardContent>
-                    </Card>
+                        </div>
+                    </div>
                 </div>
-            </AdminCard>
+            </div>
+
+            {message && <div className="fcr-message">{message}</div>}
+            {error && <div className="fcr-error">Error: {error}</div>}
         </div>
     );
 }

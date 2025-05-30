@@ -4,7 +4,7 @@ def get_title_or_message(current_stage, current_user, is_tie, votes_remaining, w
     waiting_message = ""
     # If we have a winner, set appropriate title and clear waiting message
     if winner:
-        title = "Voting Completed! Winner Announced"
+        title = "Voting Completed!"
         waiting_message = ""
     elif current_stage == 1:
         if votes_remaining == 3:

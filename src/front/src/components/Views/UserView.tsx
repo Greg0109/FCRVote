@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import * as api from '../../api';
 import { Candidate, User } from '../../types';
-import '../style/user.css';
+import '../style/unified.css';
 import ResultsView from './ResultsView';
+import logo from '../../svgs/logo.png';
 
 interface UserViewProps {
   currentUser: User;
@@ -15,31 +16,41 @@ export default function UserView({ currentUser }: UserViewProps) {
   const [error, setError] = useState('');
   const [currentStage, setCurrentStage] = useState(1);
   const [votesRemaining, setVotesRemaining] = useState(3);
-  const [title, setTitle] = useState(``);
+  const [title, setTitle] = useState('');
   const [isPolling, setIsPolling] = useState(false);
   const [waitingMessage, setWaitingMessage] = useState('');
   const [isTie, setIsTie] = useState(false);
   const [winner, setWinner] = useState<Candidate>();
   const [showResults, setShowResults] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [hasLoadedOnce, setHasLoadedOnce] = useState(false);
 
   const fetchCandidates = useCallback(async (stage: number) => {
     setError('');
     setMessage('');
+    setLoading(true);
     try {
       const [candidatesRes] = await Promise.all([
         api.fetchCandidates(stage),
       ]);
       const fetchedCandidates: Candidate[] = candidatesRes.data;
       setCandidates(fetchedCandidates);
+      setHasLoadedOnce(true);
+      setLoading(false);
     } catch (err: any) {
       const errorMsg = err.response?.data?.detail || 'Failed to load voting data.';
+      if (errorMsg === "No active session found") {
+        setIsPolling(true);
+      }
       setError(errorMsg);
+      setLoading(false);
       console.error("Fetch data failed:", errorMsg, err);
     }
   }, [currentUser.id]);
 
   const fetchVotingStatus = useCallback(async () => {
     setError('');
+    setLoading(true);
     try {
       // First get the current session to check the stage
       const sessionRes = await api.getCurrentVotingSession();
@@ -70,10 +81,15 @@ export default function UserView({ currentUser }: UserViewProps) {
         setWinner(status.winner);
         setIsPolling(false);
       }
-
+      setHasLoadedOnce(true);
+      setLoading(false);
     } catch (err: any) {
       const errorMsg = err.response?.data?.detail || 'Failed to load voting status.';
+      if (errorMsg === "No active session found") {
+        setIsPolling(true);
+      }
       setError(errorMsg);
+      setLoading(false);
       console.error("Fetch voting status failed:", errorMsg, err);
     }
   }, [currentStage, fetchCandidates]);
@@ -90,15 +106,21 @@ export default function UserView({ currentUser }: UserViewProps) {
 
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true);
       try {
         const sessionRes = await api.getCurrentVotingSession();
         const stage = Number(sessionRes.data.stage);
         setCurrentStage(stage);
         await fetchCandidates(stage);
         await fetchVotingStatus();
+        setLoading(false);
       } catch (err: any) {
         const errorMsg = err.response?.data?.detail || 'Failed to load session.';
+        if (errorMsg === "No active session found") {
+          setIsPolling(true);
+        }
         setError(errorMsg);
+        setLoading(false);
         console.error("Session fetch failed:", errorMsg, err);
       }
     };
@@ -143,6 +165,7 @@ export default function UserView({ currentUser }: UserViewProps) {
     try {
       await api.vote(Number(selectedCandidate), currentStage);
       setMessage('Vote submitted successfully!');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       setSelectedCandidate(null);
 
       // Fetch candidates and voting status to update the UI
@@ -163,98 +186,103 @@ export default function UserView({ currentUser }: UserViewProps) {
     return <ResultsView currentStage={currentStage-1} setShowResults={setShowResults} />;
   }
 
+  // Splash view for no active session, or only during initial load
+  if ((loading && !hasLoadedOnce) || error === 'No active session found') {
+    return (
+      <div className="user-splash">
+        <img src={logo} alt="Foundation Logo" className="user-splash-logo" />
+        <h2 className="user-splash-title">
+          Fundacion Conchita Rabago de Jimenez Diaz
+        </h2>
+        <h3 className="user-splash-subtitle">
+          Welcome to the voting for the Foundation Rabago 2025!
+        </h3>
+        <div className="user-splash-description">
+          Your participation is vital to ensuring that we celebrate the most deserving contributors to the scientific community.<br /><br />
+          <b>{loading && !hasLoadedOnce ? 'The voting session will start shortly.' : 'The voting session will start shortly.'}</b>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="mobile-container">
-      <div className="mobile-round-title">
+    <div className="user-container">
+      <div className="fcr-title">
         {title}
       </div>
 
       {waitingMessage && (
-        <div className="mobile-waiting">
+        <div className="user-message waiting">
           {waitingMessage}
         </div>
       )}
 
       {/* Show winner view when winner is available */}
       {winner && (
-        <div className="mobile-winner-container">
-          <h2 className="mobile-winner-title">🏆 Winner Announced! 🏆</h2>
-          <div className="mobile-winner-card">
-            <div className="mobile-winner-photo">
-              <img
-                src={winner.photo}
-                alt={`${winner.name}'s photo`}
-                className="mobile-winner-photo-img"
-              />
-            </div>
-            <div className="mobile-winner-name">
-              {winner.name}
-            </div>
-            <div className="mobile-winner-description">
-              {winner.description}
-            </div>
-            <br/>
-            <div className="mobile-winner-points">
-              Total Points: {winner.points}
-            </div>
+        <div className="user-winner-card">
+          <img
+            src={winner.photo}
+            alt={`${winner.name}'s photo`}
+            className="user-winner-photo"
+          />
+          <div className="user-winner-name">
+            {winner.name}
           </div>
-          <div className="mobile-winner-message">
+          <div className="user-winner-description">
+            {winner.description}
+          </div>
+          <div className="user-winner-points">
+            Total Points: {winner.points}
+          </div>
+          <div className="user-winner-message">
             Congratulations to the winner! Thank you all for participating.
           </div>
         </div>
       )}
 
       {/* Show loading message when no candidates are available */}
-      {!winner && candidates.length === 0 && !error && (
-        <p className="mobile-loading">Loading candidates...</p>
+      {!winner && candidates.length === 0 && !error && !isPolling && (
+        <div className="user-message waiting">Loading candidates...</div>
       )}
 
       {/* Only show candidate list and voting button if winner is not available and
           (we're not in stage 3 or we're in stage 3 with a tie and the user is the president) */}
-      {!winner && (currentStage !== 3 || (currentStage === 3 && isTie && currentUser.is_president)) && (
+      {!winner && !isPolling && (currentStage !== 3 || (currentStage === 3 && isTie && currentUser.is_president)) && (
         <>
-          <div className="mobile-candidate-list">
+          <div className="user-grid">
             {candidates.map(candidate => (
-            <div
-              key={candidate.id}
-              className={`mobile-candidate-card ${
-                selectedCandidate === candidate.id ? 'selected' : ''
-              }`}
-              onClick={() => setSelectedCandidate(candidate.id)}
-            >
-              <div className="mobile-candidate-content">
-                <div className="mobile-candidate-photo">
+              <div
+                key={candidate.id}
+                className={`user-card ${selectedCandidate === candidate.id ? 'selected' : ''}`}
+                onClick={() => setSelectedCandidate(candidate.id)}
+              >
+                <div className="user-card-content">
                   <img
-                      src={candidate.photo}
-                      alt={`${candidate.name}'s photo`}
-                      className="mobile-candidate-photo-img"
+                    src={candidate.photo}
+                    alt={`${candidate.name}'s photo`}
+                    className="user-photo"
                   />
-                </div>
-                <div>
-                  <div className="mobile-candidate-name">
-                    {candidate.name}
-                  </div>
-                  <div className="mobile-candidate-description">
-                    {candidate.description}
+                  <div className="user-info">
+                    <div className="user-name">{candidate.name}</div>
+                    <div className="user-description">"{candidate.description}"</div>
                   </div>
                 </div>
               </div>
-            </div>
             ))}
           </div>
 
           <button
-              className="mobile-continue-button"
-              onClick={submitVote}
-              disabled={selectedCandidate === null || votesRemaining <= 0}
+            onClick={submitVote}
+            disabled={selectedCandidate === null || votesRemaining <= 0}
+            className="fcr-button fcr-mt-4"
           >
-          Continue
+            Continue
           </button>
         </>
       )}
 
-      {message && <p className="mobile-message">{message}</p>}
-      {error && <p className="mobile-error">{error}</p>}
+      {message && <div className="user-message success">{message}</div>}
+      {error && <div className="user-message error">{error}</div>}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as api from '../../api';
-import '../style/results.css';
+import '../style/unified.css';
 
 interface ResultsViewProps {
   currentStage: number;
@@ -26,60 +26,61 @@ export default function ResultsView({ currentStage, setShowResults }: ResultsVie
   }, [currentStage]);
 
   const handleNextStage = () => {
-      setShowResults(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setShowResults(false);
   };
 
   return (
-    <div className="mobile-container">
-      <div className="mobile-round-title">
-        Round {currentStage} Results
+    <div className="results-container">
+      <div className="results-header">
+        <div className="results-round">
+          Round {currentStage} Results
+        </div>
+        <div className="results-subtitle">
+          Here are the results for this round of voting
+        </div>
       </div>
 
-      {error && <p className="mobile-error">{error}</p>}
+      {error && <div className="user-message error">{error}</div>}
 
-      <div className="mobile-results-list">
+      <div className="results-grid">
         {results.map((result, index) => (
-          <div key={result.candidate_id} className="mobile-result-card">
-            <div className="mobile-result-content">
-              <div className="mobile-result-photo">
-                <img
-                  src={result.photo || '/default-photo.png'}
-                  alt={`${result.name}`}
-                  className="mobile-result-photo-img"
-                />
-              </div>
-              <div className="mobile-result-info">
-                <div className="mobile-result-name">
+          <div key={result.candidate_id} className="results-card">
+            <div className="results-card-content">
+              <img
+                src={result.photo || '/default-photo.png'}
+                alt={`${result.name}`}
+                className="results-photo"
+              />
+              <div className="results-info">
+                <div className="results-name">
                   {result.name}
                 </div>
-                <div className="mobile-result-description">
+                <div className="results-description">
                   {result.description}
                 </div>
-                <div className="mobile-result-points">
-                  <div className="mobile-result-stage-points">
+                <div className="results-points">
+                  <div className="results-round-points">
                     Round {currentStage} Points: {result.points}
                   </div>
-                  <div className="mobile-result-total-points">
+                  <div className="results-total-points">
                     Total Points: {result.total_points}
                   </div>
                 </div>
               </div>
-              {index === 0 && (
-                <div className="mobile-result-winner-badge">
-                  🏆
-                </div>
-              )}
             </div>
           </div>
         ))}
       </div>
 
-      <button
-        className="mobile-continue-button"
-        onClick={handleNextStage}
-      >
-        Continue to Next Round
-      </button>
+      <div className="results-button">
+        <button
+          className="fcr-button"
+          onClick={handleNextStage}
+        >
+          Continue to Next Round
+        </button>
+      </div>
     </div>
   );
 } 

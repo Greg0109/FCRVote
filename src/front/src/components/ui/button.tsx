@@ -1,4 +1,4 @@
-import '../style/button.css';
+import '../style/unified.css';
 
 export const Button = ({ children, ...props }: any) => (
   <button className="fcr-button" {...props}>

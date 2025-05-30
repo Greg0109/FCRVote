@@ -1,5 +1,5 @@
 import React from 'react';
-import '../style/label.css';
+import '../style/unified.css';
 
 export const Label = ({
   label,

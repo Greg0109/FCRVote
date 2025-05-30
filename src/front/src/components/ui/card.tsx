@@ -1,4 +1,4 @@
-import '../style/card.css';
+import '../style/unified.css';
 import {RemoveButton} from "./button";
 
 export const Card = ({ children, ...props }: React.HTMLProps<HTMLDivElement>) => (

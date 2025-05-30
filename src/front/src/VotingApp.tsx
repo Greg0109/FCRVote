@@ -5,7 +5,7 @@ import FCRHeader from "./components/ui/header";
 import LoginForm from './components/Views/LoginForm'; // Import extracted component
 import AdminView from './components/Views/AdminView'; // Import extracted component
 import UserView from './components/Views/UserView'; // Import extracted component
-import './components/style/label.css';
+import './components/style/unified.css';
 import './App.css';
 
 // --- Main App Component ---
