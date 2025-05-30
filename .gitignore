@@ -11,3 +11,5 @@ node_modules/
 # Virtual environments
 .venv
 voting.db
+docker/.env
+docker/postgres_data

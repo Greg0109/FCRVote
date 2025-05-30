@@ -38,6 +38,9 @@ clean-all:
 venv:
 	$(UV) venv .venv
 
+front-install:
+	cd $(ROOT_DIR)/src/front/ && yarn install
+
 front:
 	cd $(ROOT_DIR)/src/front/ && yarn start
 
@@ -67,7 +70,7 @@ docker-clean: docker-stop
 docker-rm: docker-clean
 	docker rmi fcrvote || true
 
-build-front:
+build-front: front-install
 	cd $(ROOT_DIR)/src/front/ && yarn run build
 
 dist: clean
@@ -75,3 +78,6 @@ dist: clean
 
 docker-build: dist build-front docker-rm
 	docker build -t fcrvote -f docker/Dockerfile .
+
+docker-compose:
+	docker compose -f docker/docker-compose.yml up --force-recreate
