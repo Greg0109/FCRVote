@@ -1,6 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from back.database.database import get_db
+from fastapi import APIRouter, Depends
 from back.auth.auth import get_current_user
 from back.schemas.schemas import UserOut
 from back.models.models import User

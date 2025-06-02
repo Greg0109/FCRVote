@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 from sqlalchemy.orm import Session
-from back.database.database import SessionLocal, get_db
+from back.database.database import get_db
 from back.auth.auth import authenticate_user, create_access_token
 from back.schemas.schemas import Token
 from back.config import ACCESS_TOKEN_EXPIRE_MINUTES
