@@ -15,7 +15,7 @@ services:
       - fcrnet
 
   fcrvote_db:
-    image: postgres:15
+    image: postgres:16.4-alpine
     container_name: fcrvote_db
     environment:
       POSTGRES_DB: fcrvote
