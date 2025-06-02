@@ -1,7 +1,11 @@
 import axios from 'axios';
-import { Candidate, User, Result, TokenResponse } from './types';
+import { Candidate, User, Result, TokenResponse, VotingSession } from './types';
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = process.env.NODE_ENV === 'production' ? '' : 'http://macbook-air.local:8000';
+
+if (API_BASE === "") {
+    console.log("Loading production environment")
+}
 
 const apiClient = axios.create({
     baseURL: API_BASE,
@@ -26,16 +30,31 @@ export const login = (username: string, password: string) =>
 export const fetchCurrentUser = () => apiClient.get<User>('/users/me');
 
 // Admin actions
-export const addCandidate = (name: string) => apiClient.post<Candidate>('/admin/add_candidate', { name });
+export const addCandidate = (name: string, photo: string, description: string) => apiClient.post<Candidate>('/admin/add_candidate', { name, photo, description });
 export const fetchCandidatesList = () => apiClient.get<Candidate[]>('/admin/get_candidates');
 export const removeCandidate = (candidateId: number) => apiClient.delete(`/admin/remove_candidate/${candidateId}`);
 export const addUser = (username: string, password: string, is_president: boolean) => apiClient.post<User>('/admin/add_user', { username, password, is_president });
 export const fetchUsers = () => apiClient.get<User[]>('/admin/get_users');
 export const removeUser = (userId: number) => apiClient.delete(`/admin/remove_user/${userId}`);
 
+// Voting sessions
+export const startVotingSession = () => apiClient.post<{ message: string }>('/voting_sessions/start_session');
+export const endVotingSession = () => apiClient.post<{ message: string }>('/voting_sessions/end_session');
+export const getCurrentVotingSession = () => apiClient.get<VotingSession>('/voting_sessions/current_session');
+export const getAllVotingSessions = () => apiClient.get<VotingSession[]>('/voting_sessions/sessions');
+export const deleteVotingSession = (sessionId: number) => apiClient.delete(`/voting_sessions/delete_session/${sessionId}`);
+
 // Voting actions
-export const fetchCandidates = () => apiClient.get<Candidate[]>('/voting/candidates');
+export const fetchCandidates = (stage: number) => apiClient.get<Candidate[]>(`/voting/candidates/${stage}`);
 export const vote = (candidateId: number, stage: number) => apiClient.post<{ message: string }>(`/voting/vote/${candidateId}/${stage}`);
-export const fetchResults = (stage: number) => apiClient.get<Result[]>(`/voting/results/${stage}`);
+export const fetchVotingStatus = () => apiClient.get<{
+  title: string;
+  votes_remaining: number;
+  is_tie: boolean;
+  waiting_message: string | null;
+  winner: Candidate | null;
+}>(`/voting/voting_status`);
+
+export const fetchResults = (stage: number) => apiClient.get<Result>(`/voting/results/${stage}`);
 
 export default apiClient; 

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import {Card, CardContent} from './ui/card';
-import { Button } from './ui/button';
-import { Input } from './ui/input';
-import { Label } from './ui/label';
-import './style/label.css';
+import {Card, CardContent} from '../ui/card';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
+import '../style/unified.css';
 
 interface LoginFormProps {
     onLogin: (username: string, password: string) => void;
@@ -23,23 +23,21 @@ export default function LoginForm({ onLogin, error }: LoginFormProps) {
         <Card>
             <CardContent>
                 <h2 className="fcr-title">Login</h2>
-                {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
+                {error && <p className="login-error">{error}</p>}
+                <form onSubmit={handleSubmit} className="login-form">
+                    <div className="label-input-wrapper">
                         <Label htmlFor="username" label="Username" />
-                        <br/>
                         <Input
                             id="username"
                             placeholder="Enter your username"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
+                            className="input-margin"
                         />
                     </div>
-                    <br/>
-                    <div>
+                    <div className="label-input-wrapper">
                         <Label htmlFor="password" label="Password" />
-                        <br/>
                         <Input
                             id="password"
                             type="password"
@@ -47,9 +45,9 @@ export default function LoginForm({ onLogin, error }: LoginFormProps) {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
+                            className="input-margin"
                         />
                     </div>
-                    <br/>
                     <Button type="submit" className="fcr-button">
                         Login
                     </Button>

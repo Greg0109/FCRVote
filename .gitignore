@@ -6,6 +6,11 @@ dist/
 wheels/
 node_modules/
 *.egg-info
+.idea
 
 # Virtual environments
 .venv
+voting.db
+docker/.env
+docker/postgres_data
+docker/fcrvote.tar

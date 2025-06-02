@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  fcrvote:
+    image: fcrvote:latest
+    container_name: fcrvote_web
+    ports:
+      - "1095:1095"
+    depends_on:
+      - fcrvote_db
+    environment:
+      - SQLALCHEMY_DATABASE_URL=postgresql://fcrvote:1234@fcrvote_db:5432/fcrvote
+      - ENV=production
+    networks:
+      - fcrnet
+
+  fcrvote_db:
+    image: postgres:15
+    container_name: fcrvote_db
+    environment:
+      POSTGRES_DB: fcrvote
+      POSTGRES_USER: fcrvote
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    networks:
+      - fcrnet
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: fcrvote_tunnel
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: tunnel --no-autoupdate run --token $CLOUDFLARED_TOKEN
+    networks:
+      - fcrnet
+
+networks:
+  fcrnet:
+
+volumes:
+  postgres_data:

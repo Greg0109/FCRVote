@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button } from './components/ui/button';
 import * as api from './api';
-import { User, TokenResponse } from './types';
-import LoginForm from './components/LoginForm'; // Import extracted component
-import AdminView from './components/AdminView'; // Import extracted component
-import UserView from './components/UserView'; // Import extracted component
-import './components/style/label.css';
+import { User } from './types';
+import FCRHeader from "./components/ui/header";
+import LoginForm from './components/Views/LoginForm'; // Import extracted component
+import AdminView from './components/Views/AdminView'; // Import extracted component
+import UserView from './components/Views/UserView'; // Import extracted component
+import './components/style/unified.css';
 import './App.css';
-
-// Remove unused imports: Card, CardContent, CardHeader, CardTitle, Input, Label, Checkbox, Candidate, Result
 
 // --- Main App Component ---
 export default function VotingApp() {
@@ -84,34 +82,29 @@ export default function VotingApp() {
     // Refined Render Logic
     return (
         <div className="App">
-            <header>
-                <h1 className="fcr-title">Voting Application</h1>
-                {token && (
-                    <Button onClick={handleLogout} variant="outline">Logout</Button>
-                )}
-            </header>
+            <FCRHeader token={token} onClick={handleLogout}/>
 
             {/* Render based on auth and loading state */}
             {!token ? (
                 // No token: Show Login Form
-                <LoginForm onLogin={handleLogin} error={error} />
+                <LoginForm onLogin={handleLogin} error={error}/>
             ) : loadingUser ? (
                 // Token exists, but fetching user: Show Loading
                 <div>Loading...</div>
             ) : currentUser ? (
                 // Token exists, user fetched: Show Admin or User View
                 currentUser.is_admin ? (
-                    <AdminView />
+                    <AdminView/>
                 ) : (
-                    <UserView currentUser={currentUser} />
+                    <UserView currentUser={currentUser}/>
                 )
             ) : (
                 // Token exists, loading finished, but no user (fetch failed?): Show Error or Fallback
                 error ? (
                     <p className="text-red-500 p-4 text-center">Error: {error}</p>
-                 ) : (
+                ) : (
                     <div className="p-4 text-center text-lg font-medium">Failed to load user data.</div>
-                 )
+                )
             )}
         </div>
     );
