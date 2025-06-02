@@ -38,7 +38,13 @@ clean-all:
 	-rm -r node_modules
 
 venv:
-	$(UV) venv .venv
+	$(UV) sync
+	@make front-install
+	@echo "Virtual environment created at $(VENV).\nActivate it with 'source $(VENV)/bin/activate'."
+
+update-back-deps:
+	$(UV) lock --upgrade
+	@echo "Dependencies updated."
 
 front-install:
 	cd $(ROOT_DIR)/src/front/ && yarn install
