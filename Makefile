@@ -25,6 +25,7 @@ clean:
 	-rm -r build
 	-rm -r dist
 	-rm -r *.egg-info
+	-rm -r src/*.egg-info
 
 clean-all:
 	-rm -r $(VENV)
@@ -33,6 +34,7 @@ clean-all:
 	-rm -r build
 	-rm -r dist
 	-rm -r *.egg-info
+	-rm -r src/*.egg-info
 	-rm -r node_modules
 
 venv:
