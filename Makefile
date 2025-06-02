@@ -98,6 +98,7 @@ docker-send: docker-save
 	scp docker/docker-compose.yml fred:Documents/fcrvote/docker-compose.yml
 
 docker-load: docker-send
+	ssh fred "docker rmi fcrvote || true"
 	ssh fred "docker load -i Documents/fcrvote/fcrvote.tar"
 	ssh fred "rm Documents/fcrvote/fcrvote.tar"
 	rm docker/fcrvote.tar
