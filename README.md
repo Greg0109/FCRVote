@@ -26,9 +26,9 @@ A full-stack voting application built with FastAPI and React.
    make venv
    ```
 
-2. Install dependencies:
+2. Load environment:
    ```bash
-   make install
+   source .venv/bin/activate
    ```
 
 3. Start the development servers:
