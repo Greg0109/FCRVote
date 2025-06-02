@@ -4,6 +4,7 @@ services:
   fcrvote:
     image: fcrvote:latest
     container_name: fcrvote_web
+    restart: unless-stopped
     ports:
       - "1095:1095"
     depends_on:
@@ -17,6 +18,7 @@ services:
   fcrvote_db:
     image: postgres:16.4-alpine
     container_name: fcrvote_db
+    restart: unless-stopped
     environment:
       POSTGRES_DB: fcrvote
       POSTGRES_USER: fcrvote
