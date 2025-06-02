@@ -30,6 +30,7 @@ app.include_router(users.router, prefix="/users")
 app.include_router(voting_sessions.router, prefix="/voting_sessions")
 
 if os.getenv("ENV") == "production":
+    print("Loading production configuration...")
     # Navigate to the frontend build directory
     frontend_build_dir = "/home/front"
 

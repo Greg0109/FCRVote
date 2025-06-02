@@ -1,7 +1,11 @@
 import axios from 'axios';
 import { Candidate, User, Result, TokenResponse, VotingSession } from './types';
 
-const API_BASE = '';
+const API_BASE = process.env.NODE_ENV === 'production' ? '' : 'http://macbook-air.local:8000';
+
+if (API_BASE === "") {
+    console.log("Loading production environment")
+}
 
 const apiClient = axios.create({
     baseURL: API_BASE,
