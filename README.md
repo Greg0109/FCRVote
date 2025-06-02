@@ -1,4 +1,4 @@
-# Voting App
+# FCRVote
 
 A full-stack voting application built with FastAPI and React.
 
