@@ -6,7 +6,6 @@ from back.models.models import User, Candidate, Vote, VotingSession
 from back.schemas.schemas import CandidateOut, VotingStatusOut, ResultsOut
 from back.auth.auth import get_current_user
 from collections import defaultdict
-from datetime import datetime
 from back.utils import get_title_or_message
 
 router = APIRouter()
