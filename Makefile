@@ -36,6 +36,7 @@ clean-all:
 	-rm -r *.egg-info
 	-rm -r src/*.egg-info
 	-rm -r node_modules
+	-rm voting.db
 
 venv:
 	$(UV) sync
